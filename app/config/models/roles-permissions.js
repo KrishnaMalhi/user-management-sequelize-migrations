@@ -1,5 +1,6 @@
 "use strict";
 const { Model } = require("sequelize");
+const { v4: uuidv4 } = require("uuid");
 module.exports = (sequelize, DataTypes) => {
   class RolePermissions extends Model {
     /**
@@ -14,13 +15,31 @@ module.exports = (sequelize, DataTypes) => {
   RolePermissions.init(
     {
       id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
+        type: DataTypes.UUID,
+        defaultValue: () => uuidv4(),
         allowNull: false,
-        autoIncrement: true,
+        primaryKey: true,
+      },
+      create: {
+        type: DataTypes.TINYINT(1),
+      },
+      read: {
+        type: DataTypes.TINYINT(1),
+      },
+      update: {
+        type: DataTypes.TINYINT(1),
+      },
+      delete: {
+        type: DataTypes.TINYINT(1),
+      },
+      code: {
+        type: DataTypes.STRING(191),
+      },
+      description: {
+        type: DataTypes.TEXT,
       },
       role: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         allowNull: false,
         references: {
           model: "Roles",
@@ -30,7 +49,7 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "NO ACTION",
       },
       permission: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         allowNull: false,
         references: {
           model: "permissions", // should be tablename
@@ -45,6 +64,10 @@ module.exports = (sequelize, DataTypes) => {
       modelName: "RolePermissions",
       tableName: "role_permissions",
       timestamps: false,
+      createdAt: false,
+      updatedAt: false,
+      freezeTableName: true,
+      underscored: true,
     }
   );
   return RolePermissions;

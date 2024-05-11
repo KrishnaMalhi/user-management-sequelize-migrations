@@ -1,5 +1,6 @@
 "use strict";
 const { Model } = require("sequelize");
+const { v4: uuidv4 } = require("uuid");
 module.exports = (sequelize, DataTypes) => {
   class Permissions extends Model {
     /**
@@ -17,21 +18,76 @@ module.exports = (sequelize, DataTypes) => {
   Permissions.init(
     {
       id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
+        type: DataTypes.UUID,
+        defaultValue: () => uuidv4(),
         allowNull: false,
-        autoIncrement: true,
+        primaryKey: true,
       },
       name: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(191),
+      },
+      label: {
+        type: DataTypes.STRING(191),
+      },
+      menu_label: {
+        type: DataTypes.STRING(191),
+      },
+      page_url: {
+        type: DataTypes.STRING(191),
+      },
+      parent_id: {
+        type: DataTypes.UUID,
+        allowNull: true, // Allow null for root permissions
+        references: {
+          model: "Permissions",
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "NO ACTION",
+      },
+      type: {
+        type: DataTypes.STRING(191),
+      },
+      description: {
+        type: DataTypes.TEXT,
+      },
+      status: {
+        type: DataTypes.BOOLEAN,
         allowNull: false,
+        defaultValue: true,
+      },
+      // created_by: {
+      //   type: DataTypes.UUID,
+      // },
+      created_at: {
+        type: DataTypes.DATE,
+      },
+      updated_at: {
+        type: DataTypes.DATE,
+      },
+      deleted_at: {
+        type: DataTypes.DATE,
+      },
+      last_modification_at: {
+        type: DataTypes.DATE,
+      },
+      // last_modified_by: {
+      //   type: DataTypes.UUID,
+      // },
+      last_status_change_at: {
+        type: DataTypes.DATE,
       },
     },
+
     {
       sequelize,
       modelName: "Permissions",
       tableName: "permissions",
       timestamps: false,
+      createdAt: false,
+      updatedAt: false,
+      freezeTableName: true,
+      underscored: true,
     }
   );
   return Permissions;

@@ -33,6 +33,7 @@
     "moment-timezone": "^0.5.45",
     "mysql2": "^3.9.2",
     "sequelize": "^6.37.1",
+    "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
     "tedious": "^18.1.0",
     "uuid": "^9.0.1",

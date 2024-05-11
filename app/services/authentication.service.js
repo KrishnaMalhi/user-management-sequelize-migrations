@@ -1,4 +1,4 @@
-const AuthenticationDBQuery = require("../querie/authentication.query");
+const AuthenticationDBQuery = require("../queries/authentication.query");
 const JwtUtils = require("../utils/jwtUtils");
 const logger = require("../utils/loggerUtils");
 const CommonUtils = require("../utils/commonUtils");
