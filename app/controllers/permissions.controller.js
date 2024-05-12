@@ -1,8 +1,8 @@
-const PermissionsDBQurey = require("../queries/permissions.query");
-const logger = require("../utils/loggerUtils");
+const PermissionsDBQuery = require("../queries/permissions.query");
 const { ErrorCodes } = require("../utils/responseCodesUtils");
 const { ErrorMessage } = require("../utils/responseMessagesUtils");
 const ResponseUtils = require("../utils/responseUtils");
+const logger = require("../utils/loggerUtils");
 
 const createPermission = async (req, res) => {
   logger.info("IN - createPermission controller!");
@@ -12,20 +12,18 @@ const createPermission = async (req, res) => {
       label,
       menu_label,
       page_url,
-      parent_id,
+      // parent_id,
       type,
       descirption,
-      status,
     } = req.body;
-    const response = await PermissionsDBQurey.createPermission(
+    const response = await PermissionsDBQuery.createPermission(
       name,
       label,
       menu_label,
       page_url,
-      parent_id,
+      // parent_id,
       type,
       descirption,
-      status
     );
     logger.info("OUT - createPermission controller!");
 
@@ -39,7 +37,7 @@ const createPermission = async (req, res) => {
 const getAllPermissions = async (req, res) => {
   logger.info("IN - getAllPermissions controller!");
   try {
-    const response = await PermissionsDBQurey.getAllPermissions();
+    const response = await PermissionsDBQuery.getAllPermissions();
     logger.info("OUT - getAllPermissions controller!");
 
     return ResponseUtils.sendResponse(res, req, response, "success", true, 200);
@@ -53,7 +51,7 @@ const getPermissionById = async (req, res) => {
   logger.info("IN - getPermissionById controller!");
   try {
     const { id } = req.body;
-    const response = await PermissionsDBQurey.getPermissionById(id);
+    const response = await PermissionsDBQuery.getPermissionById(id);
     if (!response) {
       return ResponseUtils.sendError(
         res,

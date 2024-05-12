@@ -16,16 +16,16 @@ module.exports = {
         allowNull: false,
         primaryKey: true,
       },
-      create: {
+      isCreate: {
         type: DataTypes.TINYINT(1),
       },
-      read: {
+      isRead: {
         type: DataTypes.TINYINT(1),
       },
-      update: {
+      isUpdate: {
         type: DataTypes.TINYINT(1),
       },
-      delete: {
+      isDelete: {
         type: DataTypes.TINYINT(1),
       },
       code: {
@@ -33,6 +33,15 @@ module.exports = {
       },
       description: {
         type: DataTypes.TEXT,
+      },
+      created_at: {
+        type: DataTypes.DATE,
+      },
+      updated_at: {
+        type: DataTypes.DATE,
+      },
+      deleted_at: {
+        type: DataTypes.DATE,
       },
       role: {
         type: Sequelize.UUID,

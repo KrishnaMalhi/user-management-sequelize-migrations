@@ -6,24 +6,21 @@ const createPermission = async (
   label,
   menu_label,
   page_url,
-  parent_id,
+  // parent_id,
   type,
-  descirption,
-  status
+  descirption
 ) => {
   logger.info("IN - createPermission Database query!");
   try {
-    const response = await db.Permission.create({
-      where: {
-        name,
-        label,
-        menu_label,
-        page_url,
-        parent_id,
-        type,
-        descirption,
-        created_at: new Date(),
-      },
+    const response = await db.Permissions.create({
+      name,
+      label,
+      menu_label,
+      page_url,
+      // parent_id,
+      type,
+      descirption,
+      created_at: new Date(),
     });
 
     logger.info("OUT - createPermission Database query!");
@@ -38,7 +35,7 @@ const createPermission = async (
 const getAllPermissions = async () => {
   logger.info("IN -  getAllPermissions Database query!");
   try {
-    const response = await db.Permission.findAll();
+    const response = await db.Permissions.findAll();
 
     logger.info("OUT -  getAllPermissions Database query!");
     return response;
@@ -52,7 +49,7 @@ const getAllPermissions = async () => {
 const getPermissionById = async (id) => {
   logger.info("IN - getPermissionById Database query!");
   try {
-    let response = await db.Permission.findOne({
+    let response = await db.Permissions.findOne({
       where: { id },
     });
 

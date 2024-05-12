@@ -35,16 +35,16 @@ module.exports = (sequelize, DataTypes) => {
       page_url: {
         type: DataTypes.STRING(191),
       },
-      parent_id: {
-        type: DataTypes.UUID,
-        allowNull: true, // Allow null for root permissions
-        references: {
-          model: "Permissions",
-          key: "id",
-        },
-        onUpdate: "CASCADE",
-        onDelete: "NO ACTION",
-      },
+      // parent_id: {
+      //   type: DataTypes.UUID,
+      //   allowNull: true, // Allow null for root permissions
+      //   references: {
+      //     model: "Permissions",
+      //     key: "id",
+      //   },
+      //   onUpdate: "CASCADE",
+      //   onDelete: "NO ACTION",
+      // },
       type: {
         type: DataTypes.STRING(191),
       },

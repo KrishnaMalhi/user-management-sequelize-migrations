@@ -28,16 +28,16 @@ module.exports = {
       page_url: {
         type: DataTypes.STRING(191),
       },
-      parent_id: {
-        type: DataTypes.UUID,
-        allowNull: true, // Allow null for root permissions
-        references: {
-          model: "permissions", // Corrected model name
-          key: "id",
-        },
-        onUpdate: "CASCADE",
-        onDelete: "NO ACTION",
-      },
+      // parent_id: {
+      //   type: DataTypes.UUID,
+      //   allowNull: true, // Allow null for root permissions
+      //   references: {
+      //     model: "permissions", // Corrected model name
+      //     key: "id",
+      //   },
+      //   onUpdate: "CASCADE",
+      //   onDelete: "NO ACTION",
+      // },
       type: {
         type: DataTypes.STRING(191),
       },
@@ -71,17 +71,17 @@ module.exports = {
         type: DataTypes.DATE,
       },
     });
-    await queryInterface.addConstraint("permissions", {
-      type: "foreign key",
-      fields: ["parent_id"],
-      name: "fk_permissions_parent_id", // Adjusted constraint name
-      references: {
-        table: "permissions",
-        field: "id",
-      },
-      onUpdate: "CASCADE",
-      onDelete: "NO ACTION",
-    });
+    // await queryInterface.addConstraint("permissions", {
+    //   type: "foreign key",
+    //   fields: ["parent_id"],
+    //   name: "fk_permissions_parent_id", // Adjusted constraint name
+    //   references: {
+    //     table: "permissions",
+    //     field: "id",
+    //   },
+    //   onUpdate: "CASCADE",
+    //   onDelete: "NO ACTION",
+    // });
   },
 
   async down(queryInterface, Sequelize) {

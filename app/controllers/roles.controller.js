@@ -1,14 +1,14 @@
-const RolesDBQurey = require("../queries/roles.query");
-const logger = require("../utils/loggerUtils");
+const RolesDBQuery = require("../queries/roles.query");
 const { ErrorCodes } = require("../utils/responseCodesUtils");
 const { ErrorMessage } = require("../utils/responseMessagesUtils");
 const ResponseUtils = require("../utils/responseUtils");
+const logger = require("../utils/loggerUtils");
 
 const createRole = async (req, res) => {
   logger.info("IN - createRole controller!");
   try {
     const { name, label, description } = req.body;
-    const response = await RolesDBQurey.createRole(name, label, description);
+    const response = await RolesDBQuery.createRole(name, label, description);
     logger.info("OUT - createRole controller!");
 
     return ResponseUtils.sendResponse(res, req, response, "success", true, 200);
@@ -22,7 +22,7 @@ const createRole = async (req, res) => {
 const getAllRoles = async (req, res) => {
   logger.info("IN - getAllRoles controller!");
   try {
-    const response = await RolesDBQurey.getAllRoles();
+    const response = await RolesDBQuery.getAllRoles();
     logger.info("OUT - getAllRoles controller!");
 
     return ResponseUtils.sendResponse(res, req, response, "success", true, 200);
@@ -37,7 +37,7 @@ const getRoleById = async (req, res) => {
   logger.info("IN - getRoleById controller!");
   try {
     const { id } = req.body;
-    const response = await RolesDBQurey.getRoleById(id);
+    const response = await RolesDBQuery.getRoleById(id);
     if (!response) {
       return ResponseUtils.sendError(
         res,
