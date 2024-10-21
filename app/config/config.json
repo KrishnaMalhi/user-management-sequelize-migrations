@@ -2,21 +2,21 @@
   "development": {
     "username": "root",
     "password": null,
-    "database": "user_management_development",
+    "database": "user_management",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },
   "test": {
     "username": "root",
     "password": null,
-    "database": "user_management_test",
+    "database": "user_management",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },
   "production": {
     "username": "root",
     "password": null,
-    "database": "user_management_production",
+    "database": "user_management",
     "host": "127.0.0.1",
     "dialect": "mysql"
   }

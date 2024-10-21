@@ -47,7 +47,7 @@ module.exports = (sequelize, DataTypes) => {
       deleted_at: {
         type: DataTypes.DATE,
       },
-      role: {
+      role_id: {
         type: DataTypes.UUID,
         allowNull: false,
         references: {
@@ -57,7 +57,7 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "NO ACTION",
       },
-      permission: {
+      permission_id: {
         type: DataTypes.UUID,
         allowNull: false,
         references: {

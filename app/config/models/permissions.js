@@ -9,11 +9,33 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
+      // Permissions.belongsToMany(models.Roles, {
+      //   foreignKey: "permission",
+      //   through: models.RolePermissions,
+      // });
       Permissions.belongsToMany(models.Roles, {
-        foreignKey: "permission",
+        // through: 'RolePermissions',
         through: models.RolePermissions,
+        foreignKey: "permission_id",
       });
     }
+
+    // Static method to fetch inherited permissions recursively
+    // static async getInheritedPermissions(permissionId) {
+    //   const permission = await Permissions.findByPk(permissionId);
+    //   if (!permission) return [];
+
+    //   // Base case: if permission has no parent, return its own ID
+    //   if (!permission.parent_id) {
+    //     return [permission.id];
+    //   }
+
+    //   // Recursively fetch parent's permissions
+    //   const parentPermissions = await Permissions.getInheritedPermissions(
+    //     permission.parent_id
+    //   );
+    //   return [...parentPermissions, permission.id];
+    // }
   }
   Permissions.init(
     {
@@ -35,16 +57,20 @@ module.exports = (sequelize, DataTypes) => {
       page_url: {
         type: DataTypes.STRING(191),
       },
-      // parent_id: {
-      //   type: DataTypes.UUID,
-      //   allowNull: true, // Allow null for root permissions
-      //   references: {
-      //     model: "Permissions",
-      //     key: "id",
-      //   },
-      //   onUpdate: "CASCADE",
-      //   onDelete: "NO ACTION",
+      // action: {
+      //   type: Sequelize.STRING,  // E.g., 'create', 'read', 'edit', 'delete'
+      //   allowNull: false,
       // },
+      parent_id: {
+        type: DataTypes.UUID,
+        allowNull: true, // Allow null for root permissions
+        references: {
+          model: "Permissions",
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "NO ACTION",
+      },
       type: {
         type: DataTypes.STRING(191),
       },

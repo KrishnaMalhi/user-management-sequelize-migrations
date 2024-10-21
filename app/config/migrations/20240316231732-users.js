@@ -24,12 +24,18 @@ module.exports = {
       username: {
         type: Sequelize.STRING(191),
       },
-      mobile_number: {
+      phone: {
         type: Sequelize.STRING(20),
       },
       email: {
         type: Sequelize.STRING(191),
         unique: true,
+      },
+      country: {
+        type: Sequelize.STRING(191),
+      },
+      city: {
+        type: Sequelize.STRING(191),
       },
       status: {
         type: Sequelize.BOOLEAN,
@@ -48,7 +54,7 @@ module.exports = {
       deleted_at: {
         type: Sequelize.DATE,
       },
-      role: {
+      role_id: {
         type: Sequelize.STRING,
         allowNull: false,
       },
@@ -56,7 +62,7 @@ module.exports = {
 
     await queryInterface.addConstraint("users", {
       type: "foreign key",
-      fields: ["role"],
+      fields: ["role_id"],
       name: "fk_users__role",
       references: {
         table: "roles",

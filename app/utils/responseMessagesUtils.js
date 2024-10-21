@@ -1,4 +1,6 @@
 const ErrorMessage = {
+  //Token
+  UNAUTHORIZED: "Unauthorized!",
   //USERS
   USER_ALREADY_EXISTS: "User already exists!",
   USER_NOT_FOUND: "User not found!",
@@ -12,7 +14,9 @@ const ErrorMessage = {
 };
 
 const SuccessMessages = {
+  USER_LOGIN_SUCCESSFULLY: "User login successfully!",
   USER_REGISTERED_SUCCESSFULLY: "User created successfully!",
+  PASSWORD_CREATED_SUCCESSFULLY: "Password created successfully!",
 };
 module.exports = {
   ErrorMessage,

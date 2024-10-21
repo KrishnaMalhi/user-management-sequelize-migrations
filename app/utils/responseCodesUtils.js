@@ -1,4 +1,6 @@
 const ErrorCodes = {
+  //Token
+  UNAUTHORIZED: 401,
   //USERS
   USER_ALREADY_EXISTS: 500,
   USER_NOT_FOUND: 404,
@@ -12,7 +14,9 @@ const ErrorCodes = {
 };
 
 const SuccessCodes = {
+  USER_LOGIN_SUCCESSFULLY: 200,
   USER_REGISTERED_SUCCESSFULLY: 200,
+  PASSWORD_CREATED_SUCCESSFULLY: 200,
 };
 
 module.exports = {

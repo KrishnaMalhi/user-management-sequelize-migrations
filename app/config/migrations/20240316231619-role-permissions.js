@@ -43,11 +43,11 @@ module.exports = {
       deleted_at: {
         type: DataTypes.DATE,
       },
-      role: {
+      role_id: {
         type: Sequelize.UUID,
         allowNull: false,
       },
-      permission: {
+      permission_id: {
         type: Sequelize.UUID,
         allowNull: false,
       },
@@ -56,7 +56,7 @@ module.exports = {
     // add the all the constraints here for this table
     await queryInterface.addConstraint("role_permissions", {
       type: "foreign key",
-      fields: ["role"],
+      fields: ["role_id"],
       name: "fk_role_permissions__role",
       references: {
         table: "roles",
@@ -67,7 +67,7 @@ module.exports = {
     });
     await queryInterface.addConstraint("role_permissions", {
       type: "foreign key",
-      fields: ["permission"],
+      fields: ["permission_id"],
       name: "fk_role_permissions__permission",
       references: {
         table: "permissions",

@@ -7,6 +7,18 @@ const logger = require("../utils/loggerUtils");
 const createRole = async (req, res) => {
   logger.info("IN - createRole controller!");
   try {
+    const token = req.cookies.authToken; // Get token from cookies
+
+    if (!token) {
+      return ResponseUtils.sendError(
+        res,
+        req,
+        {},
+        ErrorMessage.UNAUTHORIZED,
+        ErrorCodes.UNAUTHORIZED
+      );
+    }
+
     const { name, label, description } = req.body;
     const response = await RolesDBQuery.createRole(name, label, description);
     logger.info("OUT - createRole controller!");
@@ -22,6 +34,18 @@ const createRole = async (req, res) => {
 const getAllRoles = async (req, res) => {
   logger.info("IN - getAllRoles controller!");
   try {
+    const token = req.cookies.authToken; // Get token from cookies
+
+    if (!token) {
+      return ResponseUtils.sendError(
+        res,
+        req,
+        {},
+        ErrorMessage.UNAUTHORIZED,
+        ErrorCodes.UNAUTHORIZED
+      );
+    }
+
     const response = await RolesDBQuery.getAllRoles();
     logger.info("OUT - getAllRoles controller!");
 
@@ -36,6 +60,18 @@ const getAllRoles = async (req, res) => {
 const getRoleById = async (req, res) => {
   logger.info("IN - getRoleById controller!");
   try {
+    const token = req.cookies.authToken; // Get token from cookies
+
+    if (!token) {
+      return ResponseUtils.sendError(
+        res,
+        req,
+        {},
+        ErrorMessage.UNAUTHORIZED,
+        ErrorCodes.UNAUTHORIZED
+      );
+    }
+
     const { id } = req.body;
     const response = await RolesDBQuery.getRoleById(id);
     if (!response) {
@@ -63,3 +99,25 @@ module.exports = {
   getAllRoles,
   getRoleById,
 };
+
+// controllers/roleController.js
+// const { Role, Permission } = require('../models');
+
+// exports.createRole = async (req, res) => {
+//   try {
+//     const { name, description, permissions } = req.body;
+
+//     const role = await Role.create({ name, description });
+
+//     if (permissions && permissions.length > 0) {
+//       const permissionObjects = await Permission.findAll({
+//         where: { id: permissions },
+//       });
+//       await role.addPermissions(permissionObjects);
+//     }
+
+//     res.status(201).json(role);
+//   } catch (error) {
+//     res.status(500).json({ message: 'Error creating role' });
+//   }
+// };

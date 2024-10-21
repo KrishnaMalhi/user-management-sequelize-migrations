@@ -12,6 +12,18 @@ const logger = require("../utils/loggerUtils");
 const createUser = async (req, res) => {
   try {
     logger.info("IN - createUser controller!");
+    const token = req.cookies.authToken; // Get token from cookies
+    console.log("cookies: ", token);
+    if (!token) {
+      return ResponseUtils.sendError(
+        res,
+        req,
+        {},
+        ErrorMessage.UNAUTHORIZED,
+        ErrorCodes.UNAUTHORIZED
+      );
+    }
+
     const { name, username, mobile_number, email, password, role } = req.body;
 
     const userExists = await UsersDBQuery.getUserByEmail(email);
@@ -26,16 +38,16 @@ const createUser = async (req, res) => {
     }
 
     //check role against role_id
-    const isRoleExist = await RolesDBQuery.getRoleById(role);
-    if (!isRoleExist) {
-      return ResponseUtils.sendError(
-        res,
-        req,
-        {},
-        ErrorMessage.ROLE_NOT_FOUND,
-        ErrorCodes.ROLE_NOT_FOUND
-      );
-    }
+    // const isRoleExist = await RolesDBQuery.getRoleById(role);
+    // if (!isRoleExist) {
+    //   return ResponseUtils.sendError(
+    //     res,
+    //     req,
+    //     {},
+    //     ErrorMessage.ROLE_NOT_FOUND,
+    //     ErrorCodes.ROLE_NOT_FOUND
+    //   );
+    // }
 
     const hashedPassword = CommonUtils.bcryptEncryption(password);
     const response = await UsersDBQuery.createUser(
@@ -67,6 +79,18 @@ const createUser = async (req, res) => {
 const getAllUsers = async (req, res) => {
   logger.info("IN - getAllUsers controller!");
   try {
+    const token = req.cookies.authToken; // Get token from cookies
+
+    if (!token) {
+      return ResponseUtils.sendError(
+        res,
+        req,
+        {},
+        ErrorMessage.UNAUTHORIZED,
+        ErrorCodes.UNAUTHORIZED
+      );
+    }
+
     const response = await UsersDBQuery.getAllUsers();
 
     logger.info("OUT - getAllUsers controller!");
@@ -82,6 +106,18 @@ const getAllUsers = async (req, res) => {
 const getUserByEmail = async (req, res) => {
   logger.info("IN - getUserByEmail controller!");
   try {
+    const token = req.cookies.authToken; // Get token from cookies
+
+    if (!token) {
+      return ResponseUtils.sendError(
+        res,
+        req,
+        {},
+        ErrorMessage.UNAUTHORIZED,
+        ErrorCodes.UNAUTHORIZED
+      );
+    }
+
     const { email } = req.body;
     const response = await UsersDBQuery.getUserByEmail(email);
     if (!response) {
@@ -106,7 +142,20 @@ const getUserByEmail = async (req, res) => {
 
 const getUserById = async (req, res) => {
   logger.info("IN - getUserById controller!");
+
   try {
+    const token = req.cookies.authToken; // Get token from cookies
+
+    if (!token) {
+      return ResponseUtils.sendError(
+        res,
+        req,
+        {},
+        ErrorMessage.UNAUTHORIZED,
+        ErrorCodes.UNAUTHORIZED
+      );
+    }
+
     const { id } = req.body;
     const response = await UsersDBQuery.getUserById(id);
     if (!response) {

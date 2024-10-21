@@ -7,6 +7,18 @@ const logger = require("../utils/loggerUtils");
 const createPermission = async (req, res) => {
   logger.info("IN - createPermission controller!");
   try {
+    const token = req.cookies.authToken; // Get token from cookies
+
+    if (!token) {
+      return ResponseUtils.sendError(
+        res,
+        req,
+        {},
+        ErrorMessage.UNAUTHORIZED,
+        ErrorCodes.UNAUTHORIZED
+      );
+    }
+
     const {
       name,
       label,
@@ -23,7 +35,7 @@ const createPermission = async (req, res) => {
       page_url,
       // parent_id,
       type,
-      descirption,
+      descirption
     );
     logger.info("OUT - createPermission controller!");
 
@@ -37,6 +49,18 @@ const createPermission = async (req, res) => {
 const getAllPermissions = async (req, res) => {
   logger.info("IN - getAllPermissions controller!");
   try {
+    const token = req.cookies.authToken; // Get token from cookies
+
+    if (!token) {
+      return ResponseUtils.sendError(
+        res,
+        req,
+        {},
+        ErrorMessage.UNAUTHORIZED,
+        ErrorCodes.UNAUTHORIZED
+      );
+    }
+
     const response = await PermissionsDBQuery.getAllPermissions();
     logger.info("OUT - getAllPermissions controller!");
 
@@ -50,6 +74,18 @@ const getAllPermissions = async (req, res) => {
 const getPermissionById = async (req, res) => {
   logger.info("IN - getPermissionById controller!");
   try {
+    const token = req.cookies.authToken; // Get token from cookies
+
+    if (!token) {
+      return ResponseUtils.sendError(
+        res,
+        req,
+        {},
+        ErrorMessage.UNAUTHORIZED,
+        ErrorCodes.UNAUTHORIZED
+      );
+    }
+
     const { id } = req.body;
     const response = await PermissionsDBQuery.getPermissionById(id);
     if (!response) {
@@ -77,3 +113,18 @@ module.exports = {
   getAllPermissions,
   getPermissionById,
 };
+
+// controllers/permissionController.js
+// const { Permission } = require('../models');
+
+// exports.createPermission = async (req, res) => {
+//   try {
+//     const { action, resource } = req.body;
+
+//     const permission = await Permission.create({ action, resource });
+
+//     res.status(201).json(permission);
+//   } catch (error) {
+//     res.status(500).json({ message: 'Error creating permission' });
+//   }
+// };

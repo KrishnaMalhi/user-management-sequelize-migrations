@@ -3,32 +3,32 @@ const JwtUtils = require("../utils/jwtUtils");
 const logger = require("../utils/loggerUtils");
 const CommonUtils = require("../utils/commonUtils");
 
-const userAuthentication = async (email, password) => {
-  logger.info("IN -  userAuthentication service!");
+const login = async (email, password) => {
+  logger.info("IN -  login service!");
   try {
     const user = { email };
-    const isAuthenticatedUser = await AuthenticationDBQuery.userAuthentication(
-      email
-    );
+    const userInfo = await AuthenticationDBQuery.login(email);
+    console.log(userInfo)
     const authenticatedPassword = CommonUtils.bcryptEncryptionComparision(
-      isAuthenticatedUser.password,
+      userInfo.password,
       password
     );
-    if (isAuthenticatedUser && authenticatedPassword) {
+    if (userInfo && authenticatedPassword) {
       const token = JwtUtils.signJWTToken(user);
-      logger.info("OUT -  userAuthentication service!");
+
+      logger.info("OUT -  login service!");
       return {
         token: token.token,
         expiresIn: token.expiresIn,
-        userData: isAuthenticatedUser,
+        userData: userInfo,
       };
     }
   } catch (err) {
-    logger.error("error in userAuthentication service", err.message);
-    throw new Error("err in userAuthentication service", err.message);
+    logger.error("error in login service", err.message);
+    throw new Error("err in login service", err.message);
   }
 };
 
 module.exports = {
-  userAuthentication,
+  login,
 };

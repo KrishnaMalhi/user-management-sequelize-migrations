@@ -3,10 +3,18 @@ const helmet = require("helmet");
 var cors = require("cors");
 const swaggerUi = require("swagger-ui-express");
 const swaggerJsDoc = require("swagger-jsdoc");
+const cookieParser = require("cookie-parser");
 
 const configureExpressApp = (app) => {
-  app.use(cors());
+  app.use(
+    cors({
+      origin: ["http://localhost:5000"],
+      credentials: true,
+    })
+  );
   app.use(express.json({ limit: "50mb" }));
+  app.use(express.urlencoded({ extended: true }));
+  app.use(cookieParser());
   // app.use(express.bodyParser({ limit: "50mb" }));
   app.use(helmet());
   // app.use(auditDateSetter.setReqDate);

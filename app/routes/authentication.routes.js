@@ -4,9 +4,27 @@ const AuthenticationController = require("../controllers/authentication.controll
 const ValidationMiddleware = require("../middlewares/validationMiddleware");
 
 router.post(
-  "/authentication",
+  "/login",
   ValidationMiddleware.validateLogin,
-  AuthenticationController.userAuthentication
+  AuthenticationController.login
+);
+
+router.post(
+  "/logout",
+  // ValidationMiddleware.validateLogin,
+  AuthenticationController.logout
+);
+
+router.post(
+  "/register",
+  ValidationMiddleware.validateRegister,
+  AuthenticationController.register
+);
+
+router.post(
+  "/create-password",
+  ValidationMiddleware.validateCreatePassword,
+  AuthenticationController.createPassword
 );
 
 module.exports = router;

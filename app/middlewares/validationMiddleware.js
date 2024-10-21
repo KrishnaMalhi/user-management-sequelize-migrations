@@ -17,7 +17,7 @@ const validate = async (schema, req, reqData, res, next) => {
   }
 };
 
-//=========================USERS===========================
+//=========================Authentication Validation===========================
 const validateLogin = async (req, res, next) => {
   const schema = yup.object().shape({
     email: yup.string().email().required(),
@@ -26,8 +26,31 @@ const validateLogin = async (req, res, next) => {
   await validate(schema, req, req.body, res, next);
 };
 
+const validateRegister = async (req, res, next) => {
+  const schema = yup.object().shape({
+    name: yup.string().required(),
+    username: yup.string(),
+    email: yup.string().email().required(),
+    phone: yup.string().required(),
+    country: yup.string().required(),
+    city: yup.string().required(),
+    password: yup.string(),
+  });
+  await validate(schema, req, req.body, res, next);
+};
+
+const validateCreatePassword = async (req, res, next) => {
+  const schema = yup.object().shape({
+    password: yup.string().required(),
+    email: yup.string().email().required(),
+  });
+  await validate(schema, req, req.body, res, next);
+};
+
 const ValidationMiddleware = {
   validateLogin,
+  validateRegister,
+  validateCreatePassword,
 };
 
 module.exports = ValidationMiddleware;
