@@ -7,17 +7,17 @@ const logger = require("../utils/loggerUtils");
 const createPermission = async (req, res) => {
   logger.info("IN - createPermission controller!");
   try {
-    const token = req.cookies.authToken; // Get token from cookies
+    // const token = req.cookies.authToken; // Get token from cookies
 
-    if (!token) {
-      return ResponseUtils.sendError(
-        res,
-        req,
-        {},
-        ErrorMessage.UNAUTHORIZED,
-        ErrorCodes.UNAUTHORIZED
-      );
-    }
+    // if (!token) {
+    //   return ResponseUtils.sendError(
+    //     res,
+    //     req,
+    //     {},
+    //     ErrorMessage.UNAUTHORIZED,
+    //     ErrorCodes.UNAUTHORIZED
+    //   );
+    // }
 
     const {
       name,
@@ -49,17 +49,17 @@ const createPermission = async (req, res) => {
 const getAllPermissions = async (req, res) => {
   logger.info("IN - getAllPermissions controller!");
   try {
-    const token = req.cookies.authToken; // Get token from cookies
+    // const token = req.cookies.authToken; // Get token from cookies
 
-    if (!token) {
-      return ResponseUtils.sendError(
-        res,
-        req,
-        {},
-        ErrorMessage.UNAUTHORIZED,
-        ErrorCodes.UNAUTHORIZED
-      );
-    }
+    // if (!token) {
+    //   return ResponseUtils.sendError(
+    //     res,
+    //     req,
+    //     {},
+    //     ErrorMessage.UNAUTHORIZED,
+    //     ErrorCodes.UNAUTHORIZED
+    //   );
+    // }
 
     const response = await PermissionsDBQuery.getAllPermissions();
     logger.info("OUT - getAllPermissions controller!");
@@ -74,17 +74,17 @@ const getAllPermissions = async (req, res) => {
 const getPermissionById = async (req, res) => {
   logger.info("IN - getPermissionById controller!");
   try {
-    const token = req.cookies.authToken; // Get token from cookies
+    // const token = req.cookies.authToken; // Get token from cookies
 
-    if (!token) {
-      return ResponseUtils.sendError(
-        res,
-        req,
-        {},
-        ErrorMessage.UNAUTHORIZED,
-        ErrorCodes.UNAUTHORIZED
-      );
-    }
+    // if (!token) {
+    //   return ResponseUtils.sendError(
+    //     res,
+    //     req,
+    //     {},
+    //     ErrorMessage.UNAUTHORIZED,
+    //     ErrorCodes.UNAUTHORIZED
+    //   );
+    // }
 
     const { id } = req.body;
     const response = await PermissionsDBQuery.getPermissionById(id);

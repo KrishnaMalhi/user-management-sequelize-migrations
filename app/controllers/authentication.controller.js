@@ -44,13 +44,14 @@ const login = async (req, res) => {
     const { password: excludedPassword, ...response } = user;
     //JWT Token
     const token = JwtUtils.signJWTToken(user);
-
-    res.cookie("authToken", token, {
-      httpOnly: true, // Prevents JavaScript access
-      secure: process.env.NODE_ENV === "production", // Only over HTTPS in production
-      sameSite: "strict", // CSRF protection
-      maxAge: 3600000, // 1 hour (1h = 3600000 ms)
-    });
+    res.setHeader("authorization", `Bearer ${token}`);
+    // res.cookie("authToken", token, {
+    //   httpOnly: true, // Prevents JavaScript access
+    //   secure: process.env.NODE_ENV === "production", // Only over HTTPS in production
+    //   sameSite: "strict", // CSRF protection
+    //   maxAge: 3600000, // 1 hour (1h = 3600000 ms)
+    //   path: "http://127.0.0.1:5000/dashboard",
+    // });
 
     // logger.info("token send succesfully");
 
@@ -58,16 +59,10 @@ const login = async (req, res) => {
       email,
     };
 
-    const responseBody = {
-      token: token.token,
-      expiresIn: token.expiresIn,
-      userData: response,
-    };
-
     return ResponseUtils.sendResponse(
       res,
       req,
-      responseBody,
+      response,
       SuccessMessages.USER_LOGIN_SUCCESSFULLY,
       true,
       SuccessCodes.USER_LOGIN_SUCCESSFULLY
@@ -80,7 +75,7 @@ const login = async (req, res) => {
 
 const logout = (req, res) => {
   logger.info("IN -  logout controller!");
-
+  res.setHeader("authorization", "");
   res.clearCookie("authToken", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -130,6 +125,16 @@ const register = async (req, res) => {
       country,
       city
     );
+    // const token = JwtUtils.signJWTToken(response);
+    // console.log(token);
+    // res.setHeader("authorization", `Bearer ${token}`);
+    // res.cookie("authToken", token, {
+    //   httpOnly: true, // Prevents JavaScript access
+    //   secure: process.env.NODE_ENV === "production", // Only over HTTPS in production
+    //   sameSite: "strict", // CSRF protection
+    //   maxAge: 3600000, // 1 hour (1h = 3600000 ms)
+    //   path: "http://127.0.0.1:5000/dashboard",
+    // });
 
     logger.info("OUT -  register controller!");
 

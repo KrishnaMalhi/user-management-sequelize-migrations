@@ -9,7 +9,8 @@ const configureExpressApp = (app) => {
   app.use(
     cors({
       origin: ["http://localhost:5000"],
-      credentials: true,
+      // credentials: true,
+      exposedHeaders: ["authorization"],
     })
   );
   app.use(express.json({ limit: "50mb" }));
