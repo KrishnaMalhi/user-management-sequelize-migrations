@@ -108,6 +108,61 @@ const getPermissionById = async (req, res) => {
   }
 };
 
+const updatePermission = async (req, res) => {
+  logger.info("IN - updatePermission controller!");
+  try {
+    // const token = req.cookies.authToken; // Get token from cookies
+
+    // if (!token) {
+    //   return ResponseUtils.sendError(
+    //     res,
+    //     req,
+    //     {},
+    //     ErrorMessage.UNAUTHORIZED,
+    //     ErrorCodes.UNAUTHORIZED
+    //   );
+    // }
+
+    const {
+      id,
+      name,
+      label,
+      menu_label,
+      page_url,
+      // parent_id,
+      type,
+      descirption,
+    } = req.body;
+    const isExist = await PermissionsDBQuery.getPermissionById(id);
+    if (!isExist) {
+      return ResponseUtils.sendError(
+        res,
+        req,
+        {},
+        ErrorMessage.PERMISSION_NOT_FOUND,
+        ErrorCodes.PERMISSION_NOT_FOUND
+      );
+    }
+
+    const response = await PermissionsDBQuery.updatePermission(
+      id,
+      name,
+      label,
+      menu_label,
+      page_url,
+      // parent_id,
+      type,
+      descirption
+    );
+    logger.info("OUT - updatePermission controller!");
+
+    return ResponseUtils.sendResponse(res, req, response, "success", true, 200);
+  } catch (err) {
+    logger.error("Error - updatePermission controller: ", err.message);
+    return ResponseUtils.sendError(res, req, {}, "", 500);
+  }
+};
+
 const deletePermission = async (req, res) => {
   logger.info("IN - deletePermission controller!");
   try {
@@ -149,6 +204,7 @@ module.exports = {
   createPermission,
   getAllPermissions,
   getPermissionById,
+  updatePermission,
   deletePermission,
 };
 

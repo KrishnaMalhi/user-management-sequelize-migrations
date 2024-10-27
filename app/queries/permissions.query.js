@@ -62,6 +62,43 @@ const getPermissionById = async (id) => {
   }
 };
 
+const updatePermission = async (
+  id,
+  name,
+  label,
+  menu_label,
+  page_url,
+  // parent_id,
+  type,
+  description
+) => {
+  logger.info("IN - updatePermission Database query!");
+  try {
+    const response = await db.Permissions.update(
+      {
+        name,
+        label,
+        menu_label,
+        page_url,
+        // parent_id,
+        type,
+        description,
+        updated_at: new Date(),
+      },
+      {
+        where: { id },
+      }
+    );
+
+    logger.info("OUT - updatePermission Database query!");
+    return response;
+  } catch (err) {
+    console.error(err);
+    logger.error("ERROR - updatePermission Database query: ", err.message);
+    throw new Error("ERROR - updatePermission Database query: " + err.message);
+  }
+};
+
 const deletePermission = async (id) => {
   logger.info("IN - deletePermission Database query!");
   try {
@@ -82,5 +119,6 @@ module.exports = {
   createPermission,
   getAllPermissions,
   getPermissionById,
+  updatePermission,
   deletePermission,
 };

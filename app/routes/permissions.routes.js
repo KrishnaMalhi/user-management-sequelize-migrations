@@ -22,6 +22,13 @@ router.get(
   PermissionController.getPermissionById
 );
 
+router.patch(
+  "/update-permission",
+  //   ValidationMiddleware.validateCreatePermission,
+  // AuthenticationMiddleware.verifyToken,
+  PermissionController.updatePermission
+);
+
 router.delete(
   "/delete-permission",
   //   ValidationMiddleware.validateGetPermissionById,
