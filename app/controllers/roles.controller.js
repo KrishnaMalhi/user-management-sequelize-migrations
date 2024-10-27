@@ -7,17 +7,17 @@ const logger = require("../utils/loggerUtils");
 const createRole = async (req, res) => {
   logger.info("IN - createRole controller!");
   try {
-    const token = req.cookies.authToken; // Get token from cookies
+    // const token = req.cookies.authToken; // Get token from cookies
 
-    if (!token) {
-      return ResponseUtils.sendError(
-        res,
-        req,
-        {},
-        ErrorMessage.UNAUTHORIZED,
-        ErrorCodes.UNAUTHORIZED
-      );
-    }
+    // if (!token) {
+    //   return ResponseUtils.sendError(
+    //     res,
+    //     req,
+    //     {},
+    //     ErrorMessage.UNAUTHORIZED,
+    //     ErrorCodes.UNAUTHORIZED
+    //   );
+    // }
 
     const { name, label, description } = req.body;
     const response = await RolesDBQuery.createRole(name, label, description);
@@ -34,17 +34,17 @@ const createRole = async (req, res) => {
 const getAllRoles = async (req, res) => {
   logger.info("IN - getAllRoles controller!");
   try {
-    const token = req.cookies.authToken; // Get token from cookies
+    // const token = req.cookies.authToken; // Get token from cookies
 
-    if (!token) {
-      return ResponseUtils.sendError(
-        res,
-        req,
-        {},
-        ErrorMessage.UNAUTHORIZED,
-        ErrorCodes.UNAUTHORIZED
-      );
-    }
+    // if (!token) {
+    //   return ResponseUtils.sendError(
+    //     res,
+    //     req,
+    //     {},
+    //     ErrorMessage.UNAUTHORIZED,
+    //     ErrorCodes.UNAUTHORIZED
+    //   );
+    // }
 
     const response = await RolesDBQuery.getAllRoles();
     logger.info("OUT - getAllRoles controller!");
@@ -60,17 +60,17 @@ const getAllRoles = async (req, res) => {
 const getRoleById = async (req, res) => {
   logger.info("IN - getRoleById controller!");
   try {
-    const token = req.cookies.authToken; // Get token from cookies
+    // const token = req.cookies.authToken; // Get token from cookies
 
-    if (!token) {
-      return ResponseUtils.sendError(
-        res,
-        req,
-        {},
-        ErrorMessage.UNAUTHORIZED,
-        ErrorCodes.UNAUTHORIZED
-      );
-    }
+    // if (!token) {
+    //   return ResponseUtils.sendError(
+    //     res,
+    //     req,
+    //     {},
+    //     ErrorMessage.UNAUTHORIZED,
+    //     ErrorCodes.UNAUTHORIZED
+    //   );
+    // }
 
     const { id } = req.body;
     const response = await RolesDBQuery.getRoleById(id);
@@ -94,10 +94,48 @@ const getRoleById = async (req, res) => {
   }
 };
 
+const deleteRole = async (req, res) => {
+  logger.info("IN - deleteRole controller!");
+  try {
+    // const token = req.cookies.authToken; // Get token from cookies
+
+    // if (!token) {
+    //   return ResponseUtils.sendError(
+    //     res,
+    //     req,
+    //     {},
+    //     ErrorMessage.UNAUTHORIZED,
+    //     ErrorCodes.UNAUTHORIZED
+    //   );
+    // }
+
+    const { id } = req.body;
+    const response = await RolesDBQuery.deleteRole(id);
+    if (!response) {
+      return ResponseUtils.sendError(
+        res,
+        req,
+        {},
+        ErrorMessage.ROLE_NOT_FOUND,
+        ErrorCodes.ROLE_NOT_FOUND
+      );
+    }
+
+    logger.info("OUT - deleteRole controller!");
+
+    return ResponseUtils.sendResponse(res, req, response, "success", true, 200);
+  } catch (err) {
+    console.log("err: ", err);
+    logger.error("ERROR - deleteRole controller: ", err.message);
+    return ResponseUtils.sendError(res, req, {}, "", 500);
+  }
+};
+
 module.exports = {
   createRole,
   getAllRoles,
   getRoleById,
+  deleteRole,
 };
 
 // controllers/roleController.js

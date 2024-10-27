@@ -4,7 +4,7 @@ const logger = require("../utils/loggerUtils");
 const createUser = async (
   name,
   username,
-  mobile_number,
+  phone,
   email,
   password,
   role
@@ -14,7 +14,7 @@ const createUser = async (
     const response = await db.Users.create({
       name,
       username,
-      mobile_number,
+      phone,
       email,
       password,
       created_at: new Date(),
@@ -92,9 +92,26 @@ const getUserById = async (id) => {
   }
 };
 
+const deleteUser = async (id) => {
+  logger.info("IN - deleteUser Database query!");
+  try {
+    let response = await db.Users.destroy({
+      where: { id },
+    });
+
+    logger.info("OUT - deleteUser Database query!");
+    return response;
+  } catch (err) {
+    console.log(err);
+    logger.error("ERROR - deleteUser Database query: ", err.message);
+    throw new Error("ERROR - deleteUser Database query: ", err.message);
+  }
+};
+
 module.exports = {
   createUser,
   getAllUsers,
   getUserByEmail,
   getUserById,
+  deleteUser,
 };

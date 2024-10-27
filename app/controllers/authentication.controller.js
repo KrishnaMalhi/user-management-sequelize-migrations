@@ -14,9 +14,7 @@ const login = async (req, res) => {
   logger.info("IN -  login controller!");
   try {
     const { email, password } = req.body;
-    // const token = await AuthenticationServices.login(email, password);
     const user = await AuthenticationDBQuery.login(email, password);
-    console.log(user);
     if (!user) {
       return ResponseUtils.sendError(
         res,
@@ -75,12 +73,12 @@ const login = async (req, res) => {
 
 const logout = (req, res) => {
   logger.info("IN -  logout controller!");
-  res.setHeader("authorization", "");
-  res.clearCookie("authToken", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-  });
+  // res.setHeader("authorization", "");
+  // res.clearCookie("authToken", {
+  //   httpOnly: true,
+  //   secure: process.env.NODE_ENV === "production",
+  //   sameSite: "strict",
+  // });
 
   logger.info("OUT -  logout controller!");
   return ResponseUtils.sendResponse(res, req, {}, "success", true, 200);

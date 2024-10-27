@@ -108,10 +108,48 @@ const getPermissionById = async (req, res) => {
   }
 };
 
+const deletePermission = async (req, res) => {
+  logger.info("IN - deletePermission controller!");
+  try {
+    // const token = req.cookies.authToken; // Get token from cookies
+
+    // if (!token) {
+    //   return ResponseUtils.sendError(
+    //     res,
+    //     req,
+    //     {},
+    //     ErrorMessage.UNAUTHORIZED,
+    //     ErrorCodes.UNAUTHORIZED
+    //   );
+    // }
+
+    const { id } = req.body;
+    const response = await PermissionsDBQuery.deletePermission(id);
+    if (!response) {
+      return ResponseUtils.sendError(
+        res,
+        req,
+        {},
+        ErrorMessage.PERMISSION_NOT_FOUND,
+        ErrorCodes.PERMISSION_NOT_FOUND
+      );
+    }
+
+    logger.info("OUT - deletePermission controller!");
+
+    return ResponseUtils.sendResponse(res, req, {}, "success", true, 200);
+  } catch (err) {
+    console.log("err: ", err);
+    logger.error("ERROR - deletePermission controller: ", err.message);
+    return ResponseUtils.sendError(res, req, {}, "", 500);
+  }
+};
+
 module.exports = {
   createPermission,
   getAllPermissions,
   getPermissionById,
+  deletePermission,
 };
 
 // controllers/permissionController.js

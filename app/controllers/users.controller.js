@@ -12,19 +12,19 @@ const logger = require("../utils/loggerUtils");
 const createUser = async (req, res) => {
   try {
     logger.info("IN - createUser controller!");
-    const token = req.cookies.authToken; // Get token from cookies
-    console.log("cookies: ", token);
-    if (!token) {
-      return ResponseUtils.sendError(
-        res,
-        req,
-        {},
-        ErrorMessage.UNAUTHORIZED,
-        ErrorCodes.UNAUTHORIZED
-      );
-    }
+    // const token = req.cookies.authToken; // Get token from cookies
+    // console.log("cookies: ", token);
+    // if (!token) {
+    //   return ResponseUtils.sendError(
+    //     res,
+    //     req,
+    //     {},
+    //     ErrorMessage.UNAUTHORIZED,
+    //     ErrorCodes.UNAUTHORIZED
+    //   );
+    // }
 
-    const { name, username, mobile_number, email, password, role } = req.body;
+    const { name, username, phone, email, password, role } = req.body;
 
     const userExists = await UsersDBQuery.getUserByEmail(email);
     if (userExists) {
@@ -53,7 +53,7 @@ const createUser = async (req, res) => {
     const response = await UsersDBQuery.createUser(
       name,
       username,
-      mobile_number,
+      phone,
       email,
       hashedPassword,
       role
@@ -79,17 +79,17 @@ const createUser = async (req, res) => {
 const getAllUsers = async (req, res) => {
   logger.info("IN - getAllUsers controller!");
   try {
-    const token = req.cookies.authToken; // Get token from cookies
+    // const token = req.cookies.authToken; // Get token from cookies
 
-    if (!token) {
-      return ResponseUtils.sendError(
-        res,
-        req,
-        {},
-        ErrorMessage.UNAUTHORIZED,
-        ErrorCodes.UNAUTHORIZED
-      );
-    }
+    // if (!token) {
+    //   return ResponseUtils.sendError(
+    //     res,
+    //     req,
+    //     {},
+    //     ErrorMessage.UNAUTHORIZED,
+    //     ErrorCodes.UNAUTHORIZED
+    //   );
+    // }
 
     const response = await UsersDBQuery.getAllUsers();
 
@@ -106,17 +106,17 @@ const getAllUsers = async (req, res) => {
 const getUserByEmail = async (req, res) => {
   logger.info("IN - getUserByEmail controller!");
   try {
-    const token = req.cookies.authToken; // Get token from cookies
+    // const token = req.cookies.authToken; // Get token from cookies
 
-    if (!token) {
-      return ResponseUtils.sendError(
-        res,
-        req,
-        {},
-        ErrorMessage.UNAUTHORIZED,
-        ErrorCodes.UNAUTHORIZED
-      );
-    }
+    // if (!token) {
+    //   return ResponseUtils.sendError(
+    //     res,
+    //     req,
+    //     {},
+    //     ErrorMessage.UNAUTHORIZED,
+    //     ErrorCodes.UNAUTHORIZED
+    //   );
+    // }
 
     const { email } = req.body;
     const response = await UsersDBQuery.getUserByEmail(email);
@@ -144,17 +144,17 @@ const getUserById = async (req, res) => {
   logger.info("IN - getUserById controller!");
 
   try {
-    const token = req.cookies.authToken; // Get token from cookies
+    // const token = req.cookies.authToken; // Get token from cookies
 
-    if (!token) {
-      return ResponseUtils.sendError(
-        res,
-        req,
-        {},
-        ErrorMessage.UNAUTHORIZED,
-        ErrorCodes.UNAUTHORIZED
-      );
-    }
+    // if (!token) {
+    //   return ResponseUtils.sendError(
+    //     res,
+    //     req,
+    //     {},
+    //     ErrorMessage.UNAUTHORIZED,
+    //     ErrorCodes.UNAUTHORIZED
+    //   );
+    // }
 
     const { id } = req.body;
     const response = await UsersDBQuery.getUserById(id);
@@ -178,9 +178,47 @@ const getUserById = async (req, res) => {
   }
 };
 
+const deleteUser = async (req, res) => {
+  logger.info("IN - deleteUser controller!");
+  try {
+    // const token = req.cookies.authToken; // Get token from cookies
+
+    // if (!token) {
+    //   return ResponseUtils.sendError(
+    //     res,
+    //     req,
+    //     {},
+    //     ErrorMessage.UNAUTHORIZED,
+    //     ErrorCodes.UNAUTHORIZED
+    //   );
+    // }
+
+    const { id } = req.body;
+    const response = await UsersDBQuery.deleteUser(id);
+    if (!response) {
+      return ResponseUtils.sendError(
+        res,
+        req,
+        {},
+        ErrorMessage.USER_NOT_FOUND,
+        ErrorCodes.USER_NOT_FOUND
+      );
+    }
+
+    logger.info("OUT - deleteUser controller!");
+
+    return ResponseUtils.sendResponse(res, req, {}, "success", true, 200);
+  } catch (err) {
+    console.log("err: ", err);
+    logger.error("ERROR - deleteUser controller: ", err.message);
+    return ResponseUtils.sendError(res, req, {}, "", 500);
+  }
+};
+
 module.exports = {
   createUser,
   getAllUsers,
   getUserByEmail,
   getUserById,
+  deleteUser,
 };

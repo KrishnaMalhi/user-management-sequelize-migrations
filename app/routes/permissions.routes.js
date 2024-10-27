@@ -7,19 +7,26 @@ const AuthenticationMiddleware = require("../middlewares/authentication");
 router.post(
   "/create-permission",
   //   ValidationMiddleware.validateCreatePermission,
-  AuthenticationMiddleware.verifyToken,
+  // AuthenticationMiddleware.verifyToken,
   PermissionController.createPermission
 );
 router.get(
   "/get-all-permissions",
-  AuthenticationMiddleware.verifyToken,
+  // AuthenticationMiddleware.verifyToken,
   PermissionController.getAllPermissions
 );
 router.get(
   "/get-permission-by-id",
   //   ValidationMiddleware.validateGetPermissionById,
-  AuthenticationMiddleware.verifyToken,
+  // AuthenticationMiddleware.verifyToken,
   PermissionController.getPermissionById
+);
+
+router.delete(
+  "/delete-permission",
+  //   ValidationMiddleware.validateGetPermissionById,
+  // AuthenticationMiddleware.verifyToken,
+  PermissionController.deletePermission
 );
 
 module.exports = router;

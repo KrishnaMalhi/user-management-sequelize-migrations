@@ -5,22 +5,21 @@ const UsersContoller = require("../controllers/users.controller");
 
 router.post(
   "/create-user",
-//   ValidationMiddleware.validateCreateUser,
+  //   ValidationMiddleware.validateCreateUser,
   UsersContoller.createUser
 );
-router.get(
-  "/get-all-users",
-  UsersContoller.getAllUsers
-);
+router.get("/get-all-users", UsersContoller.getAllUsers);
 router.get(
   "/get-user-by-email",
-//   ValidationMiddleware.validateGetUserByEmail,
+  //   ValidationMiddleware.validateGetUserByEmail,
   UsersContoller.getUserByEmail
 );
 router.get(
   "/get-user-by-id",
-//   ValidationMiddleware.validateGetUserById,
+  //   ValidationMiddleware.validateGetUserById,
   UsersContoller.getUserById
 );
+
+router.delete("/delete-user", UsersContoller.deleteUser);
 
 module.exports = router;

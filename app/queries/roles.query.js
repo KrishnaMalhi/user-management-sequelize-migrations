@@ -56,8 +56,25 @@ const getRoleById = async (id) => {
   }
 };
 
+const deleteRole = async (id) => {
+  logger.info("IN - deleteRole Database query!");
+  try {
+    const response = await db.Roles.destroy({
+      where: { id },
+    });
+
+    logger.info("OUT - deleteRole Database query!");
+    return response;
+  } catch (err) {
+    console.log(err);
+    logger.error("ERROR - deleteRole Database query: ", err.message);
+    throw new Error("ERROR - deleteRole Database query: ", err.message);
+  }
+};
+
 module.exports = {
   createRole,
   getAllRoles,
   getRoleById,
+  deleteRole,
 };

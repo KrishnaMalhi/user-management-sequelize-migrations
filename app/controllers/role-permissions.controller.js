@@ -9,17 +9,17 @@ const logger = require("../utils/loggerUtils");
 const assignPermissionsToRole = async (req, res) => {
   logger.info("IN - assignPermissionsToRole controller!");
   try {
-    const token = req.cookies.authToken; // Get token from cookies
+    // const token = req.cookies.authToken; // Get token from cookies
 
-    if (!token) {
-      return ResponseUtils.sendError(
-        res,
-        req,
-        {},
-        ErrorMessage.UNAUTHORIZED,
-        ErrorCodes.UNAUTHORIZED
-      );
-    }
+    // if (!token) {
+    //   return ResponseUtils.sendError(
+    //     res,
+    //     req,
+    //     {},
+    //     ErrorMessage.UNAUTHORIZED,
+    //     ErrorCodes.UNAUTHORIZED
+    //   );
+    // }
 
     const { role, permissions } = req.body;
 

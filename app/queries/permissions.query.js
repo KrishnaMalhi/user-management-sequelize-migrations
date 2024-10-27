@@ -62,8 +62,25 @@ const getPermissionById = async (id) => {
   }
 };
 
+const deletePermission = async (id) => {
+  logger.info("IN - deletePermission Database query!");
+  try {
+    let response = await db.Permissions.destroy({
+      where: { id },
+    });
+
+    logger.info("OUT - deletePermission Database query!");
+    return response;
+  } catch (err) {
+    console.log(err);
+    logger.error("ERROR - deletePermission Database query: ", err.message);
+    throw new Error("ERROR - deletePermission Database query: ", err.message);
+  }
+};
+
 module.exports = {
   createPermission,
   getAllPermissions,
   getPermissionById,
+  deletePermission,
 };
