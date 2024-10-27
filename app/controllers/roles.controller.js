@@ -94,6 +94,48 @@ const getRoleById = async (req, res) => {
   }
 };
 
+const updateRole = async (req, res) => {
+  logger.info("IN - updateRole controller!");
+  try {
+    // const token = req.cookies.authToken; // Get token from cookies
+
+    // if (!token) {
+    //   return ResponseUtils.sendError(
+    //     res,
+    //     req,
+    //     {},
+    //     ErrorMessage.UNAUTHORIZED,
+    //     ErrorCodes.UNAUTHORIZED
+    //   );
+    // }
+
+    const { id, name, label, description } = req.body;
+    const isExist = await RolesDBQuery.getRoleById(id);
+    if (!isExist) {
+      return ResponseUtils.sendError(
+        res,
+        req,
+        {},
+        ErrorMessage.ROLE_NOT_FOUND,
+        ErrorCodes.ROLE_NOT_FOUND
+      );
+    }
+    const response = await RolesDBQuery.updateRole(
+      id,
+      name,
+      label,
+      description
+    );
+    logger.info("OUT - updateRole controller!");
+
+    return ResponseUtils.sendResponse(res, req, response, "success", true, 200);
+  } catch (err) {
+    console.log(err);
+    logger.error("ERROR - updateRole controller: ", err.message);
+    return ResponseUtils.sendError(res, req, {}, "", 500);
+  }
+};
+
 const deleteRole = async (req, res) => {
   logger.info("IN - deleteRole controller!");
   try {
@@ -135,6 +177,7 @@ module.exports = {
   createRole,
   getAllRoles,
   getRoleById,
+  updateRole,
   deleteRole,
 };
 

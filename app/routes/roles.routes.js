@@ -14,6 +14,12 @@ router.get(
   //   ValidationMiddleware.validateGetRoleById,
   RoleController.getRoleById
 );
+router.patch(
+  "/update-role",
+  //   ValidationMiddleware.validateGetRoleById,
+  // AuthenticationMiddleware.verifyToken,
+  RoleController.updateRole
+);
 router.delete(
   "/delete-role",
   //   ValidationMiddleware.validateGetRoleById,

@@ -56,6 +56,30 @@ const getRoleById = async (id) => {
   }
 };
 
+const updateRole = async (id, name, label, description) => {
+  logger.info("IN - updateRole Database query!");
+  try {
+    const response = await db.Roles.update(
+      {
+        name,
+        label,
+        description,
+        updated_at: new Date(),
+      },
+      {
+        where: { id },
+      }
+    );
+
+    logger.info("OUT - updateRole Database query!");
+    return response;
+  } catch (err) {
+    console.log(err);
+    logger.error("ERROR - updateRole Database query: ", err.message);
+    throw new Error("ERROR - updateRole Database query: ", err.message);
+  }
+};
+
 const deleteRole = async (id) => {
   logger.info("IN - deleteRole Database query!");
   try {
@@ -76,5 +100,6 @@ module.exports = {
   createRole,
   getAllRoles,
   getRoleById,
+  updateRole,
   deleteRole,
 };
