@@ -4,21 +4,27 @@ const logger = require("../utils/loggerUtils");
 const createUser = async (
   name,
   username,
+  city,
+  country,
   phone,
   email,
   password,
-  role
+  // role,
+  role_id
 ) => {
   logger.info("IN - createUser Database query!");
   try {
     const response = await db.Users.create({
       name,
       username,
+      city,
+      country,
       phone,
       email,
       password,
       created_at: new Date(),
-      role,
+      // role,
+      role_id,
     });
 
     const { password: excludedPassword, ...user } = response.toJSON();
@@ -34,10 +40,21 @@ const createUser = async (
 const getAllUsers = async () => {
   logger.info("IN - getAllUsers Database query!");
   try {
+    // const response = await db.Users.findAll({
+    //   attributes: {
+    //     exclude: ["password"],
+    //   },
+    // });
     const response = await db.Users.findAll({
-      attributes: {
-        exclude: ["password"],
-      },
+      attributes: { exclude: ["password"] },
+      include: [
+        {
+          model: db.Roles,
+          as: "role",
+          attributes: ["label"],
+          // attributes: ["name", "label"],
+        },
+      ],
     });
 
     logger.info("OUT - getAllUsers Database query!");

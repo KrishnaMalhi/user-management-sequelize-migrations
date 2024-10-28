@@ -6,9 +6,9 @@ const createPermission = async (
   label,
   menu_label,
   page_url,
-  // parent_id,
+  parent_id,
   type,
-  descirption
+  description
 ) => {
   logger.info("IN - createPermission Database query!");
   try {
@@ -17,9 +17,9 @@ const createPermission = async (
       label,
       menu_label,
       page_url,
-      // parent_id,
+      parent_id,
       type,
-      descirption,
+      description,
       created_at: new Date(),
     });
 
@@ -46,6 +46,28 @@ const getAllPermissions = async () => {
   }
 };
 
+const getAllParentPermissions = async () => {
+  logger.info("IN -  getAllParentPermissions Database query!");
+  try {
+    const response = await db.Permissions.findAll({
+      where: { type: "Parent" },
+    });
+
+    logger.info("OUT -  getAllParentPermissions Database query!");
+    return response;
+  } catch (err) {
+    console.log(err);
+    logger.error(
+      "ERROR - getAllParentPermissions Database query: ",
+      err.message
+    );
+    throw new Error(
+      "ERROR - getAllParentPermissions Database query: ",
+      err.message
+    );
+  }
+};
+
 const getPermissionById = async (id) => {
   logger.info("IN - getPermissionById Database query!");
   try {
@@ -68,7 +90,7 @@ const updatePermission = async (
   label,
   menu_label,
   page_url,
-  // parent_id,
+  parent_id,
   type,
   description
 ) => {
@@ -80,7 +102,7 @@ const updatePermission = async (
         label,
         menu_label,
         page_url,
-        // parent_id,
+        parent_id,
         type,
         description,
         updated_at: new Date(),
@@ -118,6 +140,7 @@ const deletePermission = async (id) => {
 module.exports = {
   createPermission,
   getAllPermissions,
+  getAllParentPermissions,
   getPermissionById,
   updatePermission,
   deletePermission,

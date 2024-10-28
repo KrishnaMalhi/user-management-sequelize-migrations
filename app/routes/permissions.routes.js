@@ -10,11 +10,19 @@ router.post(
   // AuthenticationMiddleware.verifyToken,
   PermissionController.createPermission
 );
+
 router.get(
   "/get-all-permissions",
   // AuthenticationMiddleware.verifyToken,
   PermissionController.getAllPermissions
 );
+
+router.get(
+  "/get-all-parent-permissions",
+  // AuthenticationMiddleware.verifyToken,
+  PermissionController.getAllParentPermissions
+);
+
 router.get(
   "/get-permission-by-id",
   //   ValidationMiddleware.validateGetPermissionById,

@@ -24,7 +24,17 @@ const createUser = async (req, res) => {
     //   );
     // }
 
-    const { name, username, phone, email, password, role } = req.body;
+    const {
+      name,
+      username,
+      city,
+      country,
+      phone,
+      email,
+      password,
+      // role,
+      role_id,
+    } = req.body;
 
     const userExists = await UsersDBQuery.getUserByEmail(email);
     if (userExists) {
@@ -37,26 +47,29 @@ const createUser = async (req, res) => {
       );
     }
 
-    //check role against role_id
-    // const isRoleExist = await RolesDBQuery.getRoleById(role);
-    // if (!isRoleExist) {
-    //   return ResponseUtils.sendError(
-    //     res,
-    //     req,
-    //     {},
-    //     ErrorMessage.ROLE_NOT_FOUND,
-    //     ErrorCodes.ROLE_NOT_FOUND
-    //   );
-    // }
+    // check role against role_id
+    const isRoleExist = await RolesDBQuery.getRoleById(role_id);
+    if (!isRoleExist) {
+      return ResponseUtils.sendError(
+        res,
+        req,
+        {},
+        ErrorMessage.ROLE_NOT_FOUND,
+        ErrorCodes.ROLE_NOT_FOUND
+      );
+    }
 
     const hashedPassword = CommonUtils.bcryptEncryption(password);
     const response = await UsersDBQuery.createUser(
       name,
       username,
+      city,
+      country,
       phone,
       email,
       hashedPassword,
-      role
+      // role
+      role_id
     );
 
     logger.info("OUT - createUser controller!");

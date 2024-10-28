@@ -19,23 +19,32 @@ const createPermission = async (req, res) => {
     //   );
     // }
 
-    const {
-      name,
-      label,
-      menu_label,
-      page_url,
-      // parent_id,
-      type,
-      descirption,
-    } = req.body;
+    const { name, label, menu_label, page_url, parent_id, type, description } =
+      req.body;
+
+    if (parent_id) {
+      const isParentExists = await PermissionsDBQuery.getPermissionById(
+        parent_id
+      );
+      if (!isParentExists) {
+        return ResponseUtils.sendError(
+          res,
+          req,
+          {},
+          ErrorMessage.PERMISSION_NOT_FOUND,
+          ErrorCodes.PERMISSION_NOT_FOUND
+        );
+      }
+    }
+
     const response = await PermissionsDBQuery.createPermission(
       name,
       label,
       menu_label,
       page_url,
-      // parent_id,
+      parent_id,
       type,
-      descirption
+      description
     );
     logger.info("OUT - createPermission controller!");
 
@@ -66,7 +75,32 @@ const getAllPermissions = async (req, res) => {
 
     return ResponseUtils.sendResponse(res, req, response, "success", true, 200);
   } catch (err) {
-    logger.error("Error - createPermission controller: ", err.message);
+    logger.error("Error - getAllPermissions controller: ", err.message);
+    return ResponseUtils.sendError(res, req, {}, "", 500);
+  }
+};
+
+const getAllParentPermissions = async (req, res) => {
+  logger.info("IN - getAllParentPermissions controller!");
+  try {
+    // const token = req.cookies.authToken; // Get token from cookies
+
+    // if (!token) {
+    //   return ResponseUtils.sendError(
+    //     res,
+    //     req,
+    //     {},
+    //     ErrorMessage.UNAUTHORIZED,
+    //     ErrorCodes.UNAUTHORIZED
+    //   );
+    // }
+
+    const response = await PermissionsDBQuery.getAllParentPermissions();
+    logger.info("OUT - getAllParentPermissions controller!");
+
+    return ResponseUtils.sendResponse(res, req, response, "success", true, 200);
+  } catch (err) {
+    logger.error("Error - getAllParentPermissions controller: ", err.message);
     return ResponseUtils.sendError(res, req, {}, "", 500);
   }
 };
@@ -129,12 +163,12 @@ const updatePermission = async (req, res) => {
       label,
       menu_label,
       page_url,
-      // parent_id,
+      parent_id,
       type,
-      descirption,
+      description,
     } = req.body;
-    const isExist = await PermissionsDBQuery.getPermissionById(id);
-    if (!isExist) {
+    const isPermissionExists = await PermissionsDBQuery.getPermissionById(id);
+    if (!isPermissionExists) {
       return ResponseUtils.sendError(
         res,
         req,
@@ -143,6 +177,20 @@ const updatePermission = async (req, res) => {
         ErrorCodes.PERMISSION_NOT_FOUND
       );
     }
+    if (parent_id) {
+      const isParentExists = await PermissionsDBQuery.getPermissionById(
+        parent_id
+      );
+      if (!isParentExists) {
+        return ResponseUtils.sendError(
+          res,
+          req,
+          {},
+          ErrorMessage.PERMISSION_NOT_FOUND,
+          ErrorCodes.PERMISSION_NOT_FOUND
+        );
+      }
+    }
 
     const response = await PermissionsDBQuery.updatePermission(
       id,
@@ -150,9 +198,9 @@ const updatePermission = async (req, res) => {
       label,
       menu_label,
       page_url,
-      // parent_id,
+      parent_id,
       type,
-      descirption
+      description
     );
     logger.info("OUT - updatePermission controller!");
 
@@ -203,6 +251,7 @@ const deletePermission = async (req, res) => {
 module.exports = {
   createPermission,
   getAllPermissions,
+  getAllParentPermissions,
   getPermissionById,
   updatePermission,
   deletePermission,

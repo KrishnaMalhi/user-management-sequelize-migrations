@@ -6,6 +6,13 @@ const login = async (email, password) => {
   try {
     let userExist = await db.Users.findOne({
       where: { email },
+      include: [
+        {
+          model: db.Roles,
+          as: "role",
+          // attributes: ["label"],
+        },
+      ],
       // raw: true,
       // include: [
       //   {

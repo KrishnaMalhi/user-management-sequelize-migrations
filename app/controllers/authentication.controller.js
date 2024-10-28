@@ -15,6 +15,7 @@ const login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await AuthenticationDBQuery.login(email, password);
+    console.log(user);
     if (!user) {
       return ResponseUtils.sendError(
         res,
@@ -29,7 +30,6 @@ const login = async (req, res) => {
       user.password,
       password
     );
-    console.log(authenticatedPassword);
     if (!authenticatedPassword) {
       return ResponseUtils.sendError(
         res,
