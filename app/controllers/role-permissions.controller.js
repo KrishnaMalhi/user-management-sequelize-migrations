@@ -1,10 +1,184 @@
 const PermissionsDBQuery = require("../queries/permissions.query");
 const RolesDBQuery = require("../queries/roles.query");
+const RolesPermissionsDBQuery = require("../queries/role-permissions.query");
 const RolePermissionsDBQuery = require("../queries/role-permissions.query");
 const { ErrorCodes } = require("../utils/responseCodesUtils");
 const { ErrorMessage } = require("../utils/responseMessagesUtils");
 const ResponseUtils = require("../utils/responseUtils");
 const logger = require("../utils/loggerUtils");
+
+const createRolePermissions = async (req, res) => {
+  logger.info("IN - createRolePermissions controller!");
+  try {
+    // const token = req.cookies.authToken; // Get token from cookies
+
+    // if (!token) {
+    //   return ResponseUtils.sendError(
+    //     res,
+    //     req,
+    //     {},
+    //     ErrorMessage.UNAUTHORIZED,
+    //     ErrorCodes.UNAUTHORIZED
+    //   );
+    // }
+
+    const { name, label, description } = req.body;
+    const response = await RolesDBQuery.createRolePermissions(
+      name,
+      label,
+      description
+    );
+    logger.info("OUT - createRolePermissions controller!");
+
+    return ResponseUtils.sendResponse(res, req, response, "success", true, 200);
+  } catch (err) {
+    console.log(err);
+    logger.error("ERROR - createRolePermissions controller: ", err.message);
+    return ResponseUtils.sendError(res, req, {}, "", 500);
+  }
+};
+
+const getAllRolesPermissions = async (req, res) => {
+  logger.info("IN - getAllRolesPermissions controller!");
+  try {
+    // const token = req.cookies.authToken; // Get token from cookies
+
+    // if (!token) {
+    //   return ResponseUtils.sendError(
+    //     res,
+    //     req,
+    //     {},
+    //     ErrorMessage.UNAUTHORIZED,
+    //     ErrorCodes.UNAUTHORIZED
+    //   );
+    // }
+
+    const response = await RolesPermissionsDBQuery.getAllRolesPermissions();
+    logger.info("OUT - getAllRolesPermissions controller!");
+
+    return ResponseUtils.sendResponse(res, req, response, "success", true, 200);
+  } catch (err) {
+    console.log(err);
+    logger.error("Error - getAllRolesPermissions controller: ", err.message);
+    return ResponseUtils.sendError(res, req, {}, "", 500);
+  }
+};
+
+const getRolePermissionsById = async (req, res) => {
+  logger.info("IN - getRolePermissionsById controller!");
+  try {
+    // const token = req.cookies.authToken; // Get token from cookies
+
+    // if (!token) {
+    //   return ResponseUtils.sendError(
+    //     res,
+    //     req,
+    //     {},
+    //     ErrorMessage.UNAUTHORIZED,
+    //     ErrorCodes.UNAUTHORIZED
+    //   );
+    // }
+
+    const { id } = req.body;
+    const response = await RolesDBQuery.getRolePermissionsById(id);
+    if (!response) {
+      return ResponseUtils.sendError(
+        res,
+        req,
+        {},
+        ErrorMessage.ROLE_NOT_FOUND,
+        ErrorCodes.ROLE_NOT_FOUND
+      );
+    }
+
+    logger.info("OUT - getRolePermissionsById controller!");
+
+    return ResponseUtils.sendResponse(res, req, response, "success", true, 200);
+  } catch (err) {
+    console.log("err: ", err);
+    logger.error("ERROR - getRolePermissionsById controller: ", err.message);
+    return ResponseUtils.sendError(res, req, {}, "", 500);
+  }
+};
+
+const updateRolePermissions = async (req, res) => {
+  logger.info("IN - updateRolePermissions controller!");
+  try {
+    // const token = req.cookies.authToken; // Get token from cookies
+
+    // if (!token) {
+    //   return ResponseUtils.sendError(
+    //     res,
+    //     req,
+    //     {},
+    //     ErrorMessage.UNAUTHORIZED,
+    //     ErrorCodes.UNAUTHORIZED
+    //   );
+    // }
+
+    const { id, name, label, description } = req.body;
+    const isExist = await RolesDBQuery.getRoleById(id);
+    if (!isExist) {
+      return ResponseUtils.sendError(
+        res,
+        req,
+        {},
+        ErrorMessage.ROLE_NOT_FOUND,
+        ErrorCodes.ROLE_NOT_FOUND
+      );
+    }
+    const response = await RolesDBQuery.updateRolePermissions(
+      id,
+      name,
+      label,
+      description
+    );
+    logger.info("OUT - updateRolePermissions controller!");
+
+    return ResponseUtils.sendResponse(res, req, response, "success", true, 200);
+  } catch (err) {
+    console.log(err);
+    logger.error("ERROR - updateRolePermissions controller: ", err.message);
+    return ResponseUtils.sendError(res, req, {}, "", 500);
+  }
+};
+
+const deleteRolePermissions = async (req, res) => {
+  logger.info("IN - deleteRolePermissions controller!");
+  try {
+    // const token = req.cookies.authToken; // Get token from cookies
+
+    // if (!token) {
+    //   return ResponseUtils.sendError(
+    //     res,
+    //     req,
+    //     {},
+    //     ErrorMessage.UNAUTHORIZED,
+    //     ErrorCodes.UNAUTHORIZED
+    //   );
+    // }
+
+    const { id } = req.body;
+    const response = await RolesDBQuery.deleteRolePermissions(id);
+    if (!response) {
+      return ResponseUtils.sendError(
+        res,
+        req,
+        {},
+        ErrorMessage.ROLE_NOT_FOUND,
+        ErrorCodes.ROLE_NOT_FOUND
+      );
+    }
+
+    logger.info("OUT - deleteRolePermissions controller!");
+
+    return ResponseUtils.sendResponse(res, req, response, "success", true, 200);
+  } catch (err) {
+    console.log("err: ", err);
+    logger.error("ERROR - deleteRolePermissions controller: ", err.message);
+    return ResponseUtils.sendError(res, req, {}, "", 500);
+  }
+};
 
 const assignPermissionsToRole = async (req, res) => {
   logger.info("IN - assignPermissionsToRole controller!");
@@ -87,5 +261,10 @@ const assignPermissionsToRole = async (req, res) => {
 };
 
 module.exports = {
+  createRolePermissions,
+  getAllRolesPermissions,
+  getRolePermissionsById,
+  updateRolePermissions,
+  deleteRolePermissions,
   assignPermissionsToRole,
 };

@@ -45,13 +45,13 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         primaryKey: true,
       },
-      name: {
+      name: {// name should be changed to value and should be unique
         type: DataTypes.STRING(191),
       },
-      label: {
+      label: {//label should be unique
         type: DataTypes.STRING(191),
       },
-      menu_label: {
+      menu_label: {// menu_label should be removed
         type: DataTypes.STRING(191),
       },
       page_url: {
@@ -71,9 +71,14 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "NO ACTION",
       },
-      type: {
+      type: {// type should be enum
         type: DataTypes.STRING(191),
       },
+      // type: {
+      //   type: DataTypes.ENUM("parent", "child"),
+      //   allowNull: false,
+      //   defaultValue: "parent", // Optional: sets a default value for type
+      // },
       description: {
         type: DataTypes.TEXT,
       },
@@ -91,16 +96,16 @@ module.exports = (sequelize, DataTypes) => {
       updated_at: {
         type: DataTypes.DATE,
       },
-      deleted_at: {
+      deleted_at: {//should be removed
         type: DataTypes.DATE,
       },
-      last_modification_at: {
+      last_modification_at: { //should be removed
         type: DataTypes.DATE,
       },
       // last_modified_by: {
       //   type: DataTypes.UUID,
       // },
-      last_status_change_at: {
+      last_status_change_at: {//should be removed
         type: DataTypes.DATE,
       },
     },

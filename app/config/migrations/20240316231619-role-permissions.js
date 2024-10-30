@@ -16,16 +16,16 @@ module.exports = {
         allowNull: false,
         primaryKey: true,
       },
-      isCreate: {
+      is_create: {
         type: DataTypes.TINYINT(1),
       },
-      isRead: {
+      is_read: {
         type: DataTypes.TINYINT(1),
       },
-      isUpdate: {
+      is_update: {
         type: DataTypes.TINYINT(1),
       },
-      isDelete: {
+      is_delete: {
         type: DataTypes.TINYINT(1),
       },
       code: {

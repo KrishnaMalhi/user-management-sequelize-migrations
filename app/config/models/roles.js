@@ -31,10 +31,10 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         primaryKey: true,
       },
-      name: {
+      name: {// name should be changed to value and value should be unique
         type: DataTypes.STRING(191),
       },
-      label: {
+      label: { //label should be unique
         type: DataTypes.STRING(191),
       },
       description: {
@@ -54,16 +54,16 @@ module.exports = (sequelize, DataTypes) => {
       updated_at: {
         type: DataTypes.DATE,
       },
-      deleted_at: {
+      deleted_at: {//should be removed
         type: DataTypes.DATE,
       },
-      last_modification_at: {
+      last_modification_at: {//should be removed
         type: DataTypes.DATE,
       },
       // last_modified_by: {
       //   type: DataTypes.UUID,
       // },
-      last_status_change_at: {
+      last_status_change_at: {//should be removed
         type: DataTypes.DATE,
       },
     },

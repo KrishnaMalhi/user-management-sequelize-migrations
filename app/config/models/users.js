@@ -21,13 +21,13 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         primaryKey: true,
       },
-      name: {
+      name: {// name should be changed to value
         type: DataTypes.STRING(191),
       },
-      username: {
+      username: {//should be unique
         type: DataTypes.STRING(191),
       },
-      phone: {
+      phone: {//should be unique
         type: DataTypes.STRING(20),
       },
       email: {
@@ -54,7 +54,7 @@ module.exports = (sequelize, DataTypes) => {
       updated_at: {
         type: DataTypes.DATE,
       },
-      deleted_at: {
+      deleted_at: {//should be removed
         type: DataTypes.DATE,
       },
       role_id: {

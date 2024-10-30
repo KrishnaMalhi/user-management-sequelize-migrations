@@ -9,6 +9,7 @@ const appRouter = (app) => {
   app.use("/api/users", usersRoutes);
   app.use("/api/permissions", permissionsRoutes);
   app.use("/api/roles", rolesRoutes);
+  app.use("/api/role-permissions", rolePermissionsRoutes);
   // app.use("/api/", rolePermissionsRoutes);
   // app.get("/check-cookies", (req, res) => {
   //   // Access cookies via req.cookies

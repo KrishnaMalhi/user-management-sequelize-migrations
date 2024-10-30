@@ -10,6 +10,14 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      RolePermissions.belongsTo(models.Roles, {
+        foreignKey: "role_id",
+        as: "role",
+      });
+      RolePermissions.belongsTo(models.Permissions, {
+        foreignKey: "permission_id",
+        as: "permission",
+      });
     }
   }
   RolePermissions.init(
@@ -20,24 +28,36 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         primaryKey: true,
       },
-      isCreate: {
+      // value: { //value should be unique
+      //   type: DataTypes.STRING(191),
+      // },
+      // label: {//label should be unique
+      //   type: DataTypes.STRING(191),
+      // },
+      is_create: {
         type: DataTypes.TINYINT(1),
       },
-      isRead: {
+      is_read: {
         type: DataTypes.TINYINT(1),
       },
-      isUpdate: {
+      is_update: {
         type: DataTypes.TINYINT(1),
       },
-      isDelete: {
+      is_delete: {
         type: DataTypes.TINYINT(1),
       },
       code: {
+        ////should be removed
         type: DataTypes.STRING(191),
       },
       description: {
         type: DataTypes.TEXT,
       },
+      // status: {
+      //   type: DataTypes.BOOLEAN,
+      //   allowNull: false,
+      //   defaultValue: true,
+      // },
       created_at: {
         type: DataTypes.DATE,
       },
@@ -45,6 +65,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
       },
       deleted_at: {
+        //should be removed
         type: DataTypes.DATE,
       },
       role_id: {
@@ -67,7 +88,6 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "NO ACTION",
       },
-      
     },
     {
       sequelize,
