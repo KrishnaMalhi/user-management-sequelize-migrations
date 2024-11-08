@@ -28,9 +28,6 @@ module.exports = {
       is_delete: {
         type: DataTypes.TINYINT(1),
       },
-      code: {
-        type: DataTypes.STRING(191),
-      },
       description: {
         type: DataTypes.TEXT,
       },
@@ -38,9 +35,6 @@ module.exports = {
         type: DataTypes.DATE,
       },
       updated_at: {
-        type: DataTypes.DATE,
-      },
-      deleted_at: {
         type: DataTypes.DATE,
       },
       role_id: {

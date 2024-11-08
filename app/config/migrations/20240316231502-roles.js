@@ -16,11 +16,13 @@ module.exports = {
         allowNull: false,
         primaryKey: true,
       },
-      name: {
-        type: DataTypes.STRING(191),
+      value: {
+        type: DataTypes.STRING(50),
+        unique: true,
       },
       label: {
-        type: DataTypes.STRING(191),
+        type: DataTypes.STRING(50),
+        unique: true,
       },
       description: {
         type: DataTypes.TEXT,
@@ -30,25 +32,10 @@ module.exports = {
         allowNull: false,
         defaultValue: true,
       },
-      // created_by: {
-      //   type: DataTypes.UUID,
-      // },
       created_at: {
         type: DataTypes.DATE,
       },
       updated_at: {
-        type: DataTypes.DATE,
-      },
-      deleted_at: {
-        type: DataTypes.DATE,
-      },
-      last_modification_at: {
-        type: DataTypes.DATE,
-      },
-      // last_modified_by: {
-      //   type: DataTypes.UUID,
-      // },
-      last_status_change_at: {
         type: DataTypes.DATE,
       },
     });

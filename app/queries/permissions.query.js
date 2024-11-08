@@ -2,9 +2,8 @@ const db = require("../config/models");
 const logger = require("../utils/loggerUtils");
 
 const createPermission = async (
-  name,
+  value,
   label,
-  menu_label,
   page_url,
   parent_id,
   type,
@@ -13,9 +12,8 @@ const createPermission = async (
   logger.info("IN - createPermission Database query!");
   try {
     const response = await db.Permissions.create({
-      name,
+      value,
       label,
-      menu_label,
       page_url,
       parent_id,
       type,
@@ -46,11 +44,36 @@ const getAllPermissions = async () => {
   }
 };
 
+const getAllPermissionsGroupByType = async () => {
+  logger.info("IN -  getAllPermissionsGroupByType Database query!");
+  try {
+    // Fetch all permissions from the database
+    const response = await db.Permissions.findAll({
+      raw: true, // Return plain JSON objects
+      order: [["parent_id", "ASC"]], // Order by parent_id to make grouping easier
+    });
+
+    logger.info("OUT -  getAllPermissionsGroupByType Database query!");
+    return response;
+  } catch (err) {
+    console.log(err);
+    logger.error(
+      "ERROR - getAllPermissionsGroupByType Database query: ",
+      err.message
+    );
+    throw new Error(
+      "ERROR - getAllPermissionsGroupByType Database query: ",
+      err.message
+    );
+  }
+};
+
 const getAllParentPermissions = async () => {
   logger.info("IN -  getAllParentPermissions Database query!");
   try {
     const response = await db.Permissions.findAll({
       where: { type: "Parent" },
+      raw: true,
     });
 
     logger.info("OUT -  getAllParentPermissions Database query!");
@@ -73,6 +96,7 @@ const getPermissionById = async (id) => {
   try {
     let response = await db.Permissions.findOne({
       where: { id },
+      raw: true,
     });
 
     logger.info("OUT - getPermissionById Database query!");
@@ -86,9 +110,8 @@ const getPermissionById = async (id) => {
 
 const updatePermission = async (
   id,
-  name,
+  value,
   label,
-  menu_label,
   page_url,
   parent_id,
   type,
@@ -98,9 +121,8 @@ const updatePermission = async (
   try {
     const response = await db.Permissions.update(
       {
-        name,
+        value,
         label,
-        menu_label,
         page_url,
         parent_id,
         type,
@@ -140,6 +162,7 @@ const deletePermission = async (id) => {
 module.exports = {
   createPermission,
   getAllPermissions,
+  getAllPermissionsGroupByType,
   getAllParentPermissions,
   getPermissionById,
   updatePermission,

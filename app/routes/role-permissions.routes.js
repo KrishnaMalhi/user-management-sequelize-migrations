@@ -13,6 +13,16 @@ router.get(
 );
 
 router.get(
+  "/get-all-permissions-against-role",
+  RolePermissionsController.getAllPermissionsAgainstRole
+);
+
+router.get(
+  "/get-all-roles-permissions-group-by-role",
+  RolePermissionsController.getAllRolesPermissionsGroupByRole
+);
+
+router.get(
   "/get-role-permissions-by-id",
   //   ValidationMiddleware.validateGetRoleById,
   RolePermissionsController.getRolePermissionsById
@@ -29,11 +39,6 @@ router.delete(
   "/delete-role-permissions",
   //   ValidationMiddleware.validateGetRoleById,
   RolePermissionsController.deleteRolePermissions
-);
-
-router.post(
-  "/assign-permissions-to-role",
-  RolePermissionsController.assignPermissionsToRole
 );
 
 module.exports = router;

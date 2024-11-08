@@ -1,7 +1,7 @@
 const db = require("../config/models");
 const logger = require("../utils/loggerUtils");
 
-const login = async (email, password) => {
+const login = async (email) => {
   logger.info("IN - login Database query!");
   try {
     let userExist = await db.Users.findOne({
@@ -10,19 +10,10 @@ const login = async (email, password) => {
         {
           model: db.Roles,
           as: "role",
-          // attributes: ["label"],
         },
       ],
+      // attributes: { exclude: ["role_id"] },
       // raw: true,
-      // include: [
-      //   {
-      //     model: db.Roles,
-      //   },
-      // ],
-      // attributes: {
-      //   exclude: ["password"],
-      //   // exclude: ["password", "remember_token", "wrong_password_attempts"],
-      // },
     });
     logger.info("OUT - login Database query!");
     if (userExist) return userExist.toJSON();
@@ -35,7 +26,6 @@ const login = async (email, password) => {
   }
 };
 
-// const register = async (name, username, phone, email, password) => {
 const register = async (name, username, phone, email, country, city) => {
   logger.info("IN - register Database query!");
   try {
@@ -44,7 +34,6 @@ const register = async (name, username, phone, email, country, city) => {
       username,
       phone,
       email,
-      // password,
       country,
       city,
       created_at: new Date(),
@@ -72,7 +61,6 @@ const createPassword = async (email, password) => {
       }
     );
 
-    // const { password: excludedPassword, ...user } = response.toJSON();
     logger.info("OUT - createPassword Database query!");
     return response;
   } catch (err) {

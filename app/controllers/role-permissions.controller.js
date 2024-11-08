@@ -1,36 +1,51 @@
-const PermissionsDBQuery = require("../queries/permissions.query");
 const RolesDBQuery = require("../queries/roles.query");
 const RolesPermissionsDBQuery = require("../queries/role-permissions.query");
-const RolePermissionsDBQuery = require("../queries/role-permissions.query");
 const { ErrorCodes } = require("../utils/responseCodesUtils");
-const { ErrorMessage } = require("../utils/responseMessagesUtils");
+const {
+  ErrorMessage,
+  SuccessMessages,
+} = require("../utils/responseMessagesUtils");
 const ResponseUtils = require("../utils/responseUtils");
 const logger = require("../utils/loggerUtils");
 
 const createRolePermissions = async (req, res) => {
   logger.info("IN - createRolePermissions controller!");
   try {
-    // const token = req.cookies.authToken; // Get token from cookies
-
-    // if (!token) {
-    //   return ResponseUtils.sendError(
-    //     res,
-    //     req,
-    //     {},
-    //     ErrorMessage.UNAUTHORIZED,
-    //     ErrorCodes.UNAUTHORIZED
-    //   );
-    // }
-
-    const { name, label, description } = req.body;
-    const response = await RolesDBQuery.createRolePermissions(
-      name,
-      label,
-      description
+    const { roleId, roleDescription, rolePermissions } = req.body;
+    const roleExists = await RolesDBQuery.getRoleById(roleId);
+    if (!roleExists) {
+      return ResponseUtils.sendError(
+        res,
+        req,
+        {},
+        ErrorMessage.ROLE_NOT_FOUND,
+        ErrorCodes.ROLE_NOT_FOUND
+      );
+    }
+    const createdPermissions = await Promise.all(
+      rolePermissions.map(async (permission) => {
+        return RolesPermissionsDBQuery.createRolePermissions({
+          role_id: roleId,
+          permission_id: permission.permissionId,
+          is_create: permission.rights.Create ? 1 : 0,
+          is_read: permission.rights.View ? 1 : 0,
+          is_update: permission.rights.Edit ? 1 : 0,
+          is_delete: permission.rights.Delete ? 1 : 0,
+          description: roleDescription,
+        });
+      })
     );
+
     logger.info("OUT - createRolePermissions controller!");
 
-    return ResponseUtils.sendResponse(res, req, response, "success", true, 200);
+    return ResponseUtils.sendResponse(
+      res,
+      req,
+      {},
+      SuccessMessages.PERMISSIONS_ASSIGNED_TO_ROLE_SUCCESSFULLY,
+      true,
+      200
+    );
   } catch (err) {
     console.log(err);
     logger.error("ERROR - createRolePermissions controller: ", err.message);
@@ -41,18 +56,6 @@ const createRolePermissions = async (req, res) => {
 const getAllRolesPermissions = async (req, res) => {
   logger.info("IN - getAllRolesPermissions controller!");
   try {
-    // const token = req.cookies.authToken; // Get token from cookies
-
-    // if (!token) {
-    //   return ResponseUtils.sendError(
-    //     res,
-    //     req,
-    //     {},
-    //     ErrorMessage.UNAUTHORIZED,
-    //     ErrorCodes.UNAUTHORIZED
-    //   );
-    // }
-
     const response = await RolesPermissionsDBQuery.getAllRolesPermissions();
     logger.info("OUT - getAllRolesPermissions controller!");
 
@@ -64,21 +67,117 @@ const getAllRolesPermissions = async (req, res) => {
   }
 };
 
+const getAllPermissionsAgainstRole = async (req, res) => {
+  logger.info("IN - getAllPermissionsAgainstRole controller!");
+  try {
+    const { role_id } = req.query;
+    const roleExists = await RolesDBQuery.getRoleById(role_id);
+    if (!roleExists) {
+      return ResponseUtils.sendError(
+        res,
+        req,
+        {},
+        ErrorMessage.ROLE_NOT_FOUND,
+        ErrorCodes.ROLE_NOT_FOUND
+      );
+    }
+    const permissions =
+      await RolesPermissionsDBQuery.getAllPermissionsAgainstRole(role_id);
+    const response = permissions.map((permission) => ({
+      isCreate: permission.is_create,
+      isRead: permission.is_read,
+      isDelete: permission.is_delete,
+      isEdit: permission.is_update,
+      id: permission["permission.id"],
+      label: permission["permission.label"],
+      page_url: permission["permission.page_url"],
+      parent_id: permission["permission.parent_id"],
+      status: permission["permission.status"],
+      type: permission["permission.type"],
+    }));
+    logger.info("OUT - getAllPermissionsAgainstRole controller!");
+
+    return ResponseUtils.sendResponse(res, req, response, "success", true, 200);
+  } catch (err) {
+    console.log(err);
+    logger.error(
+      "Error - getAllPermissionsAgainstRole controller: ",
+      err.message
+    );
+    return ResponseUtils.sendError(res, req, {}, "", 500);
+  }
+};
+
+const getAllRolesPermissionsGroupByRole = async (req, res) => {
+  logger.info("IN - getAllRolesPermissionsGroupByRole controller!");
+  try {
+    const rolePermissions =
+      await RolesPermissionsDBQuery.getAllRolesPermissionsGroupByRole();
+
+    // Transform response to desired structure
+    const groupedPermissions = rolePermissions.reduce((result, item) => {
+      const roleId = item["role.id"];
+
+      // Initialize the role object if it doesn't exist in the result
+      if (!result[roleId]) {
+        result[roleId] = {
+          id: item.id,
+          description: item.description,
+          created_at: item.created_at,
+          updated_at: item.updated_at,
+          role: {
+            id: item["role.id"],
+            value: item["role.value"],
+            label: item["role.label"],
+            description: item["role.description"],
+            status: item["role.status"],
+            createdAt: item["role.created_at"],
+            updatedAt: item["role.updated_at"],
+            permissions: [],
+          },
+        };
+      }
+
+      // Add permission details to the role's permissions array
+      result[roleId].role.permissions.push({
+        id: item["permission.id"],
+        value: item["permission.value"],
+        label: item["permission.label"],
+        page_url: item["permission.page_url"],
+        parent_id: item["permission.parent_id"],
+        type: item["permission.type"],
+        description: item["permission.description"],
+        status: item["permission.status"],
+        created_at: item["permission.created_at"],
+        updated_at: item["permission.updated_at"],
+        isCreate: item.is_create,
+        isRead: item.is_read,
+        isUpdate: item.is_update,
+        isDelete: item.is_delete,
+      });
+
+      return result;
+    }, {});
+
+    // Convert groupedPermissions object to an array
+    const response = Object.values(groupedPermissions);
+
+    logger.info("OUT - getAllRolesPermissionsGroupByRole controller!");
+
+    return ResponseUtils.sendResponse(res, req, response, "success", true, 200);
+  } catch (err) {
+    console.log(err);
+    logger.error(
+      "Error - getAllRolesPermissionsGroupByRole controller: ",
+      err.message
+    );
+    return ResponseUtils.sendError(res, req, {}, "", 500);
+  }
+};
+
 const getRolePermissionsById = async (req, res) => {
   logger.info("IN - getRolePermissionsById controller!");
   try {
-    // const token = req.cookies.authToken; // Get token from cookies
-
-    // if (!token) {
-    //   return ResponseUtils.sendError(
-    //     res,
-    //     req,
-    //     {},
-    //     ErrorMessage.UNAUTHORIZED,
-    //     ErrorCodes.UNAUTHORIZED
-    //   );
-    // }
-
     const { id } = req.body;
     const response = await RolesDBQuery.getRolePermissionsById(id);
     if (!response) {
@@ -104,19 +203,7 @@ const getRolePermissionsById = async (req, res) => {
 const updateRolePermissions = async (req, res) => {
   logger.info("IN - updateRolePermissions controller!");
   try {
-    // const token = req.cookies.authToken; // Get token from cookies
-
-    // if (!token) {
-    //   return ResponseUtils.sendError(
-    //     res,
-    //     req,
-    //     {},
-    //     ErrorMessage.UNAUTHORIZED,
-    //     ErrorCodes.UNAUTHORIZED
-    //   );
-    // }
-
-    const { id, name, label, description } = req.body;
+    const { id, value, label, description } = req.body;
     const isExist = await RolesDBQuery.getRoleById(id);
     if (!isExist) {
       return ResponseUtils.sendError(
@@ -129,13 +216,20 @@ const updateRolePermissions = async (req, res) => {
     }
     const response = await RolesDBQuery.updateRolePermissions(
       id,
-      name,
+      value,
       label,
       description
     );
     logger.info("OUT - updateRolePermissions controller!");
 
-    return ResponseUtils.sendResponse(res, req, response, "success", true, 200);
+    return ResponseUtils.sendResponse(
+      res,
+      req,
+      {},
+      SuccessMessages.ROLE_PERMISSIONS_UPDATED_SUCCESSFULLY,
+      true,
+      200
+    );
   } catch (err) {
     console.log(err);
     logger.error("ERROR - updateRolePermissions controller: ", err.message);
@@ -146,18 +240,6 @@ const updateRolePermissions = async (req, res) => {
 const deleteRolePermissions = async (req, res) => {
   logger.info("IN - deleteRolePermissions controller!");
   try {
-    // const token = req.cookies.authToken; // Get token from cookies
-
-    // if (!token) {
-    //   return ResponseUtils.sendError(
-    //     res,
-    //     req,
-    //     {},
-    //     ErrorMessage.UNAUTHORIZED,
-    //     ErrorCodes.UNAUTHORIZED
-    //   );
-    // }
-
     const { id } = req.body;
     const response = await RolesDBQuery.deleteRolePermissions(id);
     if (!response) {
@@ -172,7 +254,14 @@ const deleteRolePermissions = async (req, res) => {
 
     logger.info("OUT - deleteRolePermissions controller!");
 
-    return ResponseUtils.sendResponse(res, req, response, "success", true, 200);
+    return ResponseUtils.sendResponse(
+      res,
+      req,
+      {},
+      SuccessMessages.ROLE_PERMISSIONS_DELETED_SUCCESSFULLY,
+      true,
+      200
+    );
   } catch (err) {
     console.log("err: ", err);
     logger.error("ERROR - deleteRolePermissions controller: ", err.message);
@@ -180,91 +269,12 @@ const deleteRolePermissions = async (req, res) => {
   }
 };
 
-const assignPermissionsToRole = async (req, res) => {
-  logger.info("IN - assignPermissionsToRole controller!");
-  try {
-    // const token = req.cookies.authToken; // Get token from cookies
-
-    // if (!token) {
-    //   return ResponseUtils.sendError(
-    //     res,
-    //     req,
-    //     {},
-    //     ErrorMessage.UNAUTHORIZED,
-    //     ErrorCodes.UNAUTHORIZED
-    //   );
-    // }
-
-    const { role, permissions } = req.body;
-
-    // Check if the role exists
-    const isRoleExist = await RolesDBQuery.getRoleById(role);
-    if (!isRoleExist) {
-      return ResponseUtils.sendError(
-        res,
-        req,
-        {},
-        ErrorMessage.ROLE_NOT_FOUND,
-        ErrorCodes.ROLE_NOT_FOUND
-      );
-    }
-
-    // Iterate over the permissions array and assign each permission to the role
-    await Promise.all(
-      permissions.map(async (perm) => {
-        const {
-          permission,
-          isCreate,
-          isRead,
-          isUpdate,
-          isDelete,
-          code,
-          description,
-        } = perm;
-
-        // Check if the permission exists
-        const isPermissionExist = await PermissionsDBQuery.getPermissionById(
-          permission
-        );
-        if (!isPermissionExist) {
-          throw new Error(ErrorMessage.PERMISSION_NOT_FOUND);
-        }
-
-        // Assign the permission to the role
-        await RolePermissionsDBQuery.assignPermissionsToRole(
-          role,
-          permission,
-          isCreate,
-          isRead,
-          isUpdate,
-          isDelete,
-          code,
-          description
-        );
-      })
-    );
-
-    logger.info("OUT - assignPermissionsToRole controller!");
-
-    return ResponseUtils.sendResponse(
-      res,
-      req,
-      {},
-      "Permissions assigned to role successfully",
-      true,
-      200
-    );
-  } catch (err) {
-    logger.error("Error - assignPermissionsToRole controller: ", err.message);
-    return ResponseUtils.sendError(res, req, {}, "", 500);
-  }
-};
-
 module.exports = {
   createRolePermissions,
   getAllRolesPermissions,
+  getAllPermissionsAgainstRole,
+  getAllRolesPermissionsGroupByRole,
   getRolePermissionsById,
   updateRolePermissions,
   deleteRolePermissions,
-  assignPermissionsToRole,
 };

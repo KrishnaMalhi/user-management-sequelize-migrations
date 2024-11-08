@@ -1,25 +1,34 @@
+const { where } = require("sequelize");
 const db = require("../config/models");
 const logger = require("../utils/loggerUtils");
 
-const createRolePermissions = async (name, label, description) => {
-  logger.info("IN - createRolePermissions Database query!");
+const createRolePermissions = async ({
+  role_id,
+  permission_id,
+  is_create,
+  is_read,
+  is_update,
+  is_delete,
+  description,
+}) => {
+  logger.info("IN - createRolePermission Database query!");
   try {
-    const response = await db.Roles.create({
-      name,
-      label,
+    const response = await db.RolePermissions.create({
+      role_id,
+      permission_id,
+      is_create,
+      is_read,
+      is_update,
+      is_delete,
       description,
       created_at: new Date(),
     });
 
-    logger.info("OUT - createRolePermissions Database query!");
+    logger.info("OUT - createRolePermission Database query!");
     return response;
   } catch (err) {
-    console.log(err);
-    logger.error("ERROR - createRolePermissions Database query: ", err.message);
-    throw new Error(
-      "ERROR - createRolePermissions Database query: ",
-      err.message
-    );
+    logger.error("ERROR - createRolePermission Database query: ", err.message);
+    throw new Error("Failed to create role permission");
   }
 };
 
@@ -33,7 +42,6 @@ const getAllRolesPermissions = async () => {
       ],
       attributes: {
         exclude: ["role_id", "permission_id"],
-        // exclude: ["password", "remember_token", "wrong_password_attempts"],
       },
     });
 
@@ -47,6 +55,79 @@ const getAllRolesPermissions = async () => {
     );
     throw new Error(
       "ERROR - getAllRolesPermissions Database query: ",
+      err.message
+    );
+  }
+};
+
+const getAllPermissionsAgainstRole = async (id) => {
+  logger.info("IN - getAllPermissionsAgainstRole Database query!");
+  try {
+    const response = await db.RolePermissions.findAll({
+      raw: true,
+      where: { role_id: id },
+      include: [{ model: db.Permissions, as: "permission" }],
+      attributes: [
+        "id",
+        "description",
+        "created_at",
+        "updated_at",
+        "is_create",
+        "is_delete",
+        "is_read",
+        "is_update",
+      ],
+    });
+
+    logger.info("OUT - getAllPermissionsAgainstRole Database query!");
+    return response;
+  } catch (err) {
+    console.log(err);
+    logger.error(
+      "ERROR - getAllPermissionsAgainstRole Database query: ",
+      err.message
+    );
+    throw new Error(
+      "ERROR - getAllPermissionsAgainstRole Database query: ",
+      err.message
+    );
+  }
+};
+
+const getAllRolesPermissionsGroupByRole = async () => {
+  logger.info("IN - getAllRolesPermissionsGroupByRole Database query!");
+  try {
+    const response = await db.RolePermissions.findAll({
+      raw: true, // Return plain JSON objects
+      include: [
+        { model: db.Roles, as: "role" },
+        {
+          model: db.Permissions,
+          as: "permission",
+        },
+      ],
+      attributes: [
+        "id",
+        "description",
+        "created_at",
+        "updated_at",
+        "is_create",
+        "is_read",
+        "is_delete",
+        "is_update",
+      ],
+    });
+
+    logger.info("OUT - getAllRolesPermissionsGroupByRole Database query!");
+    return response;
+  } catch (err) {
+    console.log(err);
+    logger.error(
+      "ERROR - getAllRolesPermissionsGroupByRole Database query: ",
+      err.message
+    );
+    throw new Error(
+      "ERROR - getAllRolesPermissionsGroupByRole Database query: ",
       err.message
     );
   }
@@ -74,12 +155,12 @@ const getRolePermissionsById = async (id) => {
   }
 };
 
-const updateRolePermissions = async (id, name, label, description) => {
+const updateRolePermissions = async (id, value, label, description) => {
   logger.info("IN - updateRolePermissions Database query!");
   try {
     const response = await db.Roles.update(
       {
-        name,
+        value,
         label,
         description,
         updated_at: new Date(),
@@ -120,50 +201,12 @@ const deleteRolePermissions = async (id) => {
   }
 };
 
-const assignPermissionsToRole = async (
-  role,
-  permission,
-  isCreate,
-  isRead,
-  isUpdate,
-  isDelete,
-  code,
-  description
-) => {
-  logger.info("IN - assignPermissionsToRole Database query!");
-  try {
-    const response = await db.RolePermissions.create({
-      role,
-      permission,
-      create: isCreate,
-      read: isRead,
-      update: isUpdate,
-      delete: isDelete,
-      code,
-      description,
-      //   created_at: new Date(),
-    });
-
-    logger.info("OUT - assignPermissionsToRole Database query!");
-    return response;
-  } catch (err) {
-    console.log(err);
-    logger.error(
-      "ERROR - assignPermissionsToRole Database query: ",
-      err.message
-    );
-    throw new Error(
-      "ERROR - assignPermissionsToRole Database query: ",
-      err.message
-    );
-  }
-};
-
 module.exports = {
   createRolePermissions,
   getAllRolesPermissions,
+  getAllPermissionsAgainstRole,
+  getAllRolesPermissionsGroupByRole,
   getRolePermissionsById,
   updateRolePermissions,
   deleteRolePermissions,
-  assignPermissionsToRole,
 };

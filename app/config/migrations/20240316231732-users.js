@@ -19,23 +19,26 @@ module.exports = {
         allowNull: false,
       },
       name: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(50),
       },
       username: {
-        type: Sequelize.STRING(191),
+        type: Sequelize.STRING(50),
+      },
+      desgination: {
+        type: Sequelize.STRING(50),
       },
       phone: {
         type: Sequelize.STRING(20),
       },
       email: {
-        type: Sequelize.STRING(191),
+        type: Sequelize.STRING(50),
         unique: true,
       },
       country: {
-        type: Sequelize.STRING(191),
+        type: Sequelize.STRING(50),
       },
       city: {
-        type: Sequelize.STRING(191),
+        type: Sequelize.STRING(50),
       },
       status: {
         type: Sequelize.BOOLEAN,
@@ -43,15 +46,12 @@ module.exports = {
         defaultValue: true,
       },
       password: {
-        type: Sequelize.STRING(191),
+        type: Sequelize.STRING(50),
       },
       created_at: {
         type: Sequelize.DATE,
       },
       updated_at: {
-        type: Sequelize.DATE,
-      },
-      deleted_at: {
         type: Sequelize.DATE,
       },
       role_id: {

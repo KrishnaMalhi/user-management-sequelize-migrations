@@ -18,6 +18,11 @@ router.get(
 );
 
 router.get(
+  "/get-all-permissions-group-by-type",
+  PermissionController.getAllPermissionsGroupByType
+);
+
+router.get(
   "/get-all-parent-permissions",
   // AuthenticationMiddleware.verifyToken,
   PermissionController.getAllParentPermissions

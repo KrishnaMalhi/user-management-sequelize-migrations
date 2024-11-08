@@ -45,25 +45,20 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         primaryKey: true,
       },
-      name: {// name should be changed to value and should be unique
-        type: DataTypes.STRING(191),
+      value: {
+        type: DataTypes.STRING(50),
+        unique: true,
       },
-      label: {//label should be unique
-        type: DataTypes.STRING(191),
-      },
-      menu_label: {// menu_label should be removed
-        type: DataTypes.STRING(191),
+      label: {
+        type: DataTypes.STRING(50),
+        unique: true,
       },
       page_url: {
         type: DataTypes.STRING(191),
       },
-      // action: {
-      //   type: Sequelize.STRING,  // E.g., 'create', 'read', 'edit', 'delete'
-      //   allowNull: false,
-      // },
       parent_id: {
         type: DataTypes.UUID,
-        allowNull: true, // Allow null for root permissions
+        allowNull: true,
         references: {
           model: "Permissions",
           key: "id",
@@ -71,14 +66,11 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "NO ACTION",
       },
-      type: {// type should be enum
-        type: DataTypes.STRING(191),
+      type: {
+        type: DataTypes.ENUM("parent", "child"),
+        allowNull: false,
+        defaultValue: "parent",
       },
-      // type: {
-      //   type: DataTypes.ENUM("parent", "child"),
-      //   allowNull: false,
-      //   defaultValue: "parent", // Optional: sets a default value for type
-      // },
       description: {
         type: DataTypes.TEXT,
       },
@@ -87,25 +79,10 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: true,
       },
-      // created_by: {
-      //   type: DataTypes.UUID,
-      // },
       created_at: {
         type: DataTypes.DATE,
       },
       updated_at: {
-        type: DataTypes.DATE,
-      },
-      deleted_at: {//should be removed
-        type: DataTypes.DATE,
-      },
-      last_modification_at: { //should be removed
-        type: DataTypes.DATE,
-      },
-      // last_modified_by: {
-      //   type: DataTypes.UUID,
-      // },
-      last_status_change_at: {//should be removed
         type: DataTypes.DATE,
       },
     },

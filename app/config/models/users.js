@@ -21,24 +21,30 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         primaryKey: true,
       },
-      name: {// name should be changed to value
-        type: DataTypes.STRING(191),
+      name: {
+        type: DataTypes.STRING(50),
       },
-      username: {//should be unique
-        type: DataTypes.STRING(191),
+      username: {
+        type: DataTypes.STRING(50),
+        // unique: true,
       },
-      phone: {//should be unique
+      desgination: {
+        type: DataTypes.STRING(50),
+        // unique: true,
+      },
+      phone: {
         type: DataTypes.STRING(20),
+        unique: true,
       },
       email: {
-        type: DataTypes.STRING(191),
+        type: DataTypes.STRING(50),
         unique: true,
       },
       country: {
-        type: DataTypes.STRING(191),
+        type: DataTypes.STRING(50),
       },
       city: {
-        type: DataTypes.STRING(191),
+        type: DataTypes.STRING(50),
       },
       status: {
         type: DataTypes.BOOLEAN,
@@ -46,15 +52,12 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: true,
       },
       password: {
-        type: DataTypes.STRING(191),
+        type: DataTypes.STRING(50),
       },
       created_at: {
         type: DataTypes.DATE,
       },
       updated_at: {
-        type: DataTypes.DATE,
-      },
-      deleted_at: {//should be removed
         type: DataTypes.DATE,
       },
       role_id: {

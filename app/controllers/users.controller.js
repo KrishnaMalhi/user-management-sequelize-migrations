@@ -12,32 +12,21 @@ const logger = require("../utils/loggerUtils");
 const createUser = async (req, res) => {
   try {
     logger.info("IN - createUser controller!");
-    // const token = req.cookies.authToken; // Get token from cookies
-    // console.log("cookies: ", token);
-    // if (!token) {
-    //   return ResponseUtils.sendError(
-    //     res,
-    //     req,
-    //     {},
-    //     ErrorMessage.UNAUTHORIZED,
-    //     ErrorCodes.UNAUTHORIZED
-    //   );
-    // }
 
     const {
       name,
       username,
+      desgination,
       city,
       country,
       phone,
       email,
       password,
-      // role,
       role_id,
     } = req.body;
 
-    const userExists = await UsersDBQuery.getUserByEmail(email);
-    if (userExists) {
+    const user = await UsersDBQuery.getUserByEmail(email);
+    if (user) {
       return ResponseUtils.sendError(
         res,
         req,
@@ -47,7 +36,17 @@ const createUser = async (req, res) => {
       );
     }
 
-    // check role against role_id
+    const phoneExist = await UsersDBQuery.getUserByPhone(phone);
+    if (phoneExist) {
+      return ResponseUtils.sendError(
+        res,
+        req,
+        {},
+        ErrorMessage.PHONE_ALREADY_EXISTS,
+        ErrorCodes.PHONE_ALREADY_EXISTS
+      );
+    }
+
     const isRoleExist = await RolesDBQuery.getRoleById(role_id);
     if (!isRoleExist) {
       return ResponseUtils.sendError(
@@ -59,16 +58,16 @@ const createUser = async (req, res) => {
       );
     }
 
-    const hashedPassword = CommonUtils.bcryptEncryption(password);
+    const hashedPassword = await CommonUtils.bcryptEncryption(password);
     const response = await UsersDBQuery.createUser(
       name,
       username,
+      desgination,
       city,
       country,
       phone,
       email,
       hashedPassword,
-      // role
       role_id
     );
 
@@ -77,10 +76,10 @@ const createUser = async (req, res) => {
     return ResponseUtils.sendResponse(
       res,
       req,
-      response,
-      SuccessMessages.USER_REGISTERED_SUCCESSFULLY,
+      {},
+      SuccessMessages.USER_CREATED_SUCCESSFULLY,
       true,
-      SuccessCodes.USER_REGISTERED_SUCCESSFULLY
+      200
     );
   } catch (err) {
     console.log("err: ", err);
@@ -92,18 +91,6 @@ const createUser = async (req, res) => {
 const getAllUsers = async (req, res) => {
   logger.info("IN - getAllUsers controller!");
   try {
-    // const token = req.cookies.authToken; // Get token from cookies
-
-    // if (!token) {
-    //   return ResponseUtils.sendError(
-    //     res,
-    //     req,
-    //     {},
-    //     ErrorMessage.UNAUTHORIZED,
-    //     ErrorCodes.UNAUTHORIZED
-    //   );
-    // }
-
     const response = await UsersDBQuery.getAllUsers();
 
     logger.info("OUT - getAllUsers controller!");
@@ -119,18 +106,6 @@ const getAllUsers = async (req, res) => {
 const getUserByEmail = async (req, res) => {
   logger.info("IN - getUserByEmail controller!");
   try {
-    // const token = req.cookies.authToken; // Get token from cookies
-
-    // if (!token) {
-    //   return ResponseUtils.sendError(
-    //     res,
-    //     req,
-    //     {},
-    //     ErrorMessage.UNAUTHORIZED,
-    //     ErrorCodes.UNAUTHORIZED
-    //   );
-    // }
-
     const { email } = req.body;
     const response = await UsersDBQuery.getUserByEmail(email);
     if (!response) {
@@ -153,22 +128,36 @@ const getUserByEmail = async (req, res) => {
   }
 };
 
+const getUserByPhone = async (req, res) => {
+  logger.info("IN - getUserByPhone controller!");
+
+  try {
+    const { phone } = req.body;
+    const response = await UsersDBQuery.getUserByPhone(phone);
+    if (!response) {
+      return ResponseUtils.sendError(
+        res,
+        req,
+        {},
+        ErrorMessage.USER_NOT_FOUND,
+        ErrorCodes.USER_NOT_FOUND
+      );
+    }
+
+    logger.info("OUT - getUserByPhone controller!");
+
+    return ResponseUtils.sendResponse(res, req, response, "success", true, 200);
+  } catch (err) {
+    console.log("err: ", err);
+    logger.error("ERROR - getUserByPhone controller: ", err.message);
+    return ResponseUtils.sendError(res, req, {}, "", 500);
+  }
+};
+
 const getUserById = async (req, res) => {
   logger.info("IN - getUserById controller!");
 
   try {
-    // const token = req.cookies.authToken; // Get token from cookies
-
-    // if (!token) {
-    //   return ResponseUtils.sendError(
-    //     res,
-    //     req,
-    //     {},
-    //     ErrorMessage.UNAUTHORIZED,
-    //     ErrorCodes.UNAUTHORIZED
-    //   );
-    // }
-
     const { id } = req.body;
     const response = await UsersDBQuery.getUserById(id);
     if (!response) {
@@ -194,18 +183,6 @@ const getUserById = async (req, res) => {
 const deleteUser = async (req, res) => {
   logger.info("IN - deleteUser controller!");
   try {
-    // const token = req.cookies.authToken; // Get token from cookies
-
-    // if (!token) {
-    //   return ResponseUtils.sendError(
-    //     res,
-    //     req,
-    //     {},
-    //     ErrorMessage.UNAUTHORIZED,
-    //     ErrorCodes.UNAUTHORIZED
-    //   );
-    // }
-
     const { id } = req.body;
     const response = await UsersDBQuery.deleteUser(id);
     if (!response) {
@@ -220,7 +197,14 @@ const deleteUser = async (req, res) => {
 
     logger.info("OUT - deleteUser controller!");
 
-    return ResponseUtils.sendResponse(res, req, {}, "success", true, 200);
+    return ResponseUtils.sendResponse(
+      res,
+      req,
+      {},
+      SuccessMessages.USER_DELETED_SUCCESSFULLY,
+      true,
+      200
+    );
   } catch (err) {
     console.log("err: ", err);
     logger.error("ERROR - deleteUser controller: ", err.message);
@@ -232,6 +216,7 @@ module.exports = {
   createUser,
   getAllUsers,
   getUserByEmail,
+  getUserByPhone,
   getUserById,
   deleteUser,
 };

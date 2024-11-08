@@ -1,11 +1,11 @@
 const db = require("../config/models");
 const logger = require("../utils/loggerUtils");
 
-const createRole = async (name, label, description) => {
+const createRole = async (value, label, description) => {
   logger.info("IN - createRole Database query!");
   try {
     const response = await db.Roles.create({
-      name,
+      value,
       label,
       description,
       created_at: new Date(),
@@ -24,12 +24,6 @@ const getAllRoles = async () => {
   logger.info("IN - getAllRoles Database query!");
   try {
     const response = await db.Roles.findAll();
-    // const response = await db.Roles.findAll({
-    //   attributes: {
-    //     exclude: ["role_status_id"],
-    //   },
-    //   include: [{ model: role_status }, { model: role_permissions }],
-    // });
 
     logger.info("OUT - getAllRoles Database query!");
     return response;
@@ -56,12 +50,34 @@ const getRoleById = async (id) => {
   }
 };
 
-const updateRole = async (id, name, label, description) => {
+const getRoleByValueAndLabel = async (value, label) => {
+  logger.info("IN - getRoleByValueAndLabel Database query!");
+  try {
+    const response = await db.Roles.findOne({
+      where: { value, label },
+    });
+
+    logger.info("OUT - getRoleByValueAndLabel Database query!");
+    return response;
+  } catch (err) {
+    console.log(err);
+    logger.error(
+      "ERROR - getRoleByValueAndLabel Database query: ",
+      err.message
+    );
+    throw new Error(
+      "ERROR - getRoleByValueAndLabel Database query: ",
+      err.message
+    );
+  }
+};
+
+const updateRole = async (id, value, label, description) => {
   logger.info("IN - updateRole Database query!");
   try {
     const response = await db.Roles.update(
       {
-        name,
+        value,
         label,
         description,
         updated_at: new Date(),
@@ -100,6 +116,7 @@ module.exports = {
   createRole,
   getAllRoles,
   getRoleById,
+  getRoleByValueAndLabel,
   updateRole,
   deleteRole,
 };

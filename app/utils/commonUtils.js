@@ -138,11 +138,11 @@ const isEmpty = (val) => {
 
 const bcryptEncryption = (password) => {
   const saltRounds = 10;
-  return bcrypt.hashSync(password, saltRounds);
+  return bcrypt.hash(password, saltRounds);
 };
 
-const bcryptEncryptionComparision = (hashedPassword, password) => {
-  return bcrypt.compareSync(password, hashedPassword);
+const bcryptEncryptionComparision = (password, hashedPassword) => {
+  return bcrypt.compare(password, hashedPassword);
 };
 
 const parseXmlToJson = (xml) => {

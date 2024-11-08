@@ -16,30 +16,21 @@ module.exports = {
         allowNull: false,
         primaryKey: true,
       },
-      name: {
-        type: DataTypes.STRING(191),
+      value: {
+        type: DataTypes.STRING(50),
+        unique: true,
       },
       label: {
-        type: DataTypes.STRING(191),
-      },
-      menu_label: {
-        type: DataTypes.STRING(191),
+        type: DataTypes.STRING(50),
+        unique: true,
       },
       page_url: {
         type: DataTypes.STRING(191),
       },
-      // parent_id: {
-      //   type: DataTypes.UUID,
-      //   allowNull: true, // Allow null for root permissions
-      //   references: {
-      //     model: "permissions", // Corrected model name
-      //     key: "id",
-      //   },
-      //   onUpdate: "CASCADE",
-      //   onDelete: "NO ACTION",
-      // },
       type: {
-        type: DataTypes.STRING(191),
+        type: DataTypes.ENUM("parent", "child"),
+        allowNull: false,
+        defaultValue: "parent",
       },
       description: {
         type: DataTypes.TEXT,
@@ -49,39 +40,24 @@ module.exports = {
         allowNull: false,
         defaultValue: true,
       },
-      // created_by: {
-      //   type: DataTypes.UUID,
-      // },
       created_at: {
         type: DataTypes.DATE,
       },
       updated_at: {
         type: DataTypes.DATE,
       },
-      deleted_at: {
-        type: DataTypes.DATE,
-      },
-      last_modification_at: {
-        type: DataTypes.DATE,
-      },
-      // last_modified_by: {
-      //   type: DataTypes.UUID,
-      // },
-      last_status_change_at: {
-        type: DataTypes.DATE,
-      },
     });
-    // await queryInterface.addConstraint("permissions", {
-    //   type: "foreign key",
-    //   fields: ["parent_id"],
-    //   name: "fk_permissions_parent_id", // Adjusted constraint name
-    //   references: {
-    //     table: "permissions",
-    //     field: "id",
-    //   },
-    //   onUpdate: "CASCADE",
-    //   onDelete: "NO ACTION",
-    // });
+    await queryInterface.addConstraint("permissions", {
+      type: "foreign key",
+      fields: ["parent_id"],
+      name: "fk_permissions_parent_id", // Adjusted constraint name
+      references: {
+        table: "permissions",
+        field: "id",
+      },
+      onUpdate: "CASCADE",
+      onDelete: "NO ACTION",
+    });
   },
 
   async down(queryInterface, Sequelize) {

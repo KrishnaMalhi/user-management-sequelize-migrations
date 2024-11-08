@@ -14,7 +14,7 @@ const login = async (req, res) => {
   logger.info("IN -  login controller!");
   try {
     const { email, password } = req.body;
-    const user = await AuthenticationDBQuery.login(email, password);
+    const user = await AuthenticationDBQuery.login(email);
     console.log(user);
     if (!user) {
       return ResponseUtils.sendError(
@@ -27,8 +27,8 @@ const login = async (req, res) => {
     }
 
     const authenticatedPassword = commonUtils.bcryptEncryptionComparision(
-      user.password,
-      password
+      password,
+      user.password
     );
     if (!authenticatedPassword) {
       return ResponseUtils.sendError(
@@ -51,7 +51,7 @@ const login = async (req, res) => {
     //   path: "http://127.0.0.1:5000/dashboard",
     // });
 
-    // logger.info("token send succesfully");
+    logger.info("token send succesfully");
 
     req.user = {
       email,
@@ -87,7 +87,6 @@ const logout = (req, res) => {
 const register = async (req, res) => {
   logger.info("IN -  register controller!");
   try {
-    // const { name, username, phone, email, password, country, city } = req.body;
     const { name, username, phone, email, country, city } = req.body;
 
     const userExists = await UsersDBQuery.getUserByEmail(email);
@@ -101,38 +100,14 @@ const register = async (req, res) => {
       );
     }
 
-    //check role against role_id
-    // const isRoleExist = await RolesDBQuery.getRoleById(role);
-    // if (!isRoleExist) {
-    //   return ResponseUtils.sendError(
-    //     res,
-    //     req,
-    //     {},
-    //     ErrorMessage.ROLE_NOT_FOUND,
-    //     ErrorCodes.ROLE_NOT_FOUND
-    //   );
-    // }
-
-    // const hashedPassword = commonUtils.bcryptEncryption(password);
     const response = await AuthenticationDBQuery.register(
       name,
       username,
       phone,
       email,
-      // hashedPassword
       country,
       city
     );
-    // const token = JwtUtils.signJWTToken(response);
-    // console.log(token);
-    // res.setHeader("authorization", `Bearer ${token}`);
-    // res.cookie("authToken", token, {
-    //   httpOnly: true, // Prevents JavaScript access
-    //   secure: process.env.NODE_ENV === "production", // Only over HTTPS in production
-    //   sameSite: "strict", // CSRF protection
-    //   maxAge: 3600000, // 1 hour (1h = 3600000 ms)
-    //   path: "http://127.0.0.1:5000/dashboard",
-    // });
 
     logger.info("OUT -  register controller!");
 
@@ -165,8 +140,7 @@ const createPassword = async (req, res) => {
         ErrorCodes.USER_NOT_FOUND
       );
     }
-
-    const hashedPassword = commonUtils.bcryptEncryption(password);
+    const hashedPassword = await commonUtils.bcryptEncryption(password);
     const response = await AuthenticationDBQuery.createPassword(
       email,
       hashedPassword

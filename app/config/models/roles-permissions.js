@@ -28,12 +28,6 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         primaryKey: true,
       },
-      // value: { //value should be unique
-      //   type: DataTypes.STRING(191),
-      // },
-      // label: {//label should be unique
-      //   type: DataTypes.STRING(191),
-      // },
       is_create: {
         type: DataTypes.TINYINT(1),
       },
@@ -46,26 +40,18 @@ module.exports = (sequelize, DataTypes) => {
       is_delete: {
         type: DataTypes.TINYINT(1),
       },
-      code: {
-        ////should be removed
-        type: DataTypes.STRING(191),
-      },
       description: {
         type: DataTypes.TEXT,
       },
-      // status: {
-      //   type: DataTypes.BOOLEAN,
-      //   allowNull: false,
-      //   defaultValue: true,
-      // },
+      status: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+      },
       created_at: {
         type: DataTypes.DATE,
       },
       updated_at: {
-        type: DataTypes.DATE,
-      },
-      deleted_at: {
-        //should be removed
         type: DataTypes.DATE,
       },
       role_id: {
@@ -82,7 +68,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.UUID,
         allowNull: false,
         references: {
-          model: "permissions", // should be tablename
+          model: "permissions",
           key: "id",
         },
         onUpdate: "CASCADE",

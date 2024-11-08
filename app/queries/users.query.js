@@ -4,12 +4,12 @@ const logger = require("../utils/loggerUtils");
 const createUser = async (
   name,
   username,
+  desgination,
   city,
   country,
   phone,
   email,
   password,
-  // role,
   role_id
 ) => {
   logger.info("IN - createUser Database query!");
@@ -17,13 +17,13 @@ const createUser = async (
     const response = await db.Users.create({
       name,
       username,
+      desgination,
       city,
       country,
       phone,
       email,
       password,
       created_at: new Date(),
-      // role,
       role_id,
     });
 
@@ -40,21 +40,15 @@ const createUser = async (
 const getAllUsers = async () => {
   logger.info("IN - getAllUsers Database query!");
   try {
-    // const response = await db.Users.findAll({
-    //   attributes: {
-    //     exclude: ["password"],
-    //   },
-    // });
     const response = await db.Users.findAll({
       attributes: { exclude: ["password"] },
       include: [
         {
           model: db.Roles,
           as: "role",
-          attributes: ["label"],
-          // attributes: ["name", "label"],
         },
       ],
+      attributes: { exclude: ["role_id"] },
     });
 
     logger.info("OUT - getAllUsers Database query!");
@@ -74,11 +68,6 @@ const getUserByEmail = async (email) => {
       attributes: {
         exclude: ["password"],
       },
-      // include: [
-      //   {
-      //     model: roles,
-      //   },
-      // ],
     });
 
     logger.info("OUT - getUserByEmail Database query!");
@@ -87,6 +76,25 @@ const getUserByEmail = async (email) => {
     console.log("err: ", err);
     logger.error("ERROR - getUserByEmail Database query: ", err.message);
     throw new Error("ERROR - getUserByEmail Database query: ", err.message);
+  }
+};
+
+const getUserByPhone = async (phone) => {
+  logger.info("IN - getUserByPhone Database query!");
+  try {
+    const response = await db.Users.findOne({
+      where: { phone },
+      attributes: {
+        exclude: ["password"],
+      },
+    });
+
+    logger.info("OUT - getUserByPhone Database query!");
+    return response;
+  } catch (err) {
+    console.log("err: ", err);
+    logger.error("ERROR - getUserByPhone Database query: ", err.message);
+    throw new Error("ERROR - getUserByPhone Database query: ", err.message);
   }
 };
 
@@ -112,7 +120,7 @@ const getUserById = async (id) => {
 const deleteUser = async (id) => {
   logger.info("IN - deleteUser Database query!");
   try {
-    let response = await db.Users.destroy({
+    const response = await db.Users.destroy({
       where: { id },
     });
 
@@ -129,6 +137,7 @@ module.exports = {
   createUser,
   getAllUsers,
   getUserByEmail,
+  getUserByPhone,
   getUserById,
   deleteUser,
 };
