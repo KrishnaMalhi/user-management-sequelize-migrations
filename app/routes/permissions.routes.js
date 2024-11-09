@@ -6,39 +6,40 @@ const AuthenticationMiddleware = require("../middlewares/authentication");
 
 router.post(
   "/create-permission",
+  AuthenticationMiddleware.verifyToken,
   //   ValidationMiddleware.validateCreatePermission,
-  // AuthenticationMiddleware.verifyToken,
   PermissionController.createPermission
 );
 
 router.get(
   "/get-all-permissions",
-  // AuthenticationMiddleware.verifyToken,
+  AuthenticationMiddleware.verifyToken,
   PermissionController.getAllPermissions
 );
 
 router.get(
   "/get-all-permissions-group-by-type",
+  AuthenticationMiddleware.verifyToken,
   PermissionController.getAllPermissionsGroupByType
 );
 
 router.get(
   "/get-all-parent-permissions",
-  // AuthenticationMiddleware.verifyToken,
+  AuthenticationMiddleware.verifyToken,
   PermissionController.getAllParentPermissions
 );
 
 router.get(
   "/get-permission-by-id",
+  AuthenticationMiddleware.verifyToken,
   //   ValidationMiddleware.validateGetPermissionById,
-  // AuthenticationMiddleware.verifyToken,
   PermissionController.getPermissionById
 );
 
 router.patch(
   "/update-permission",
+  AuthenticationMiddleware.verifyToken,
   //   ValidationMiddleware.validateCreatePermission,
-  // AuthenticationMiddleware.verifyToken,
   PermissionController.updatePermission
 );
 

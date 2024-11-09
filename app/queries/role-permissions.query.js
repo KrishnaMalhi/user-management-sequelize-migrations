@@ -1,4 +1,3 @@
-const { where } = require("sequelize");
 const db = require("../config/models");
 const logger = require("../utils/loggerUtils");
 
@@ -111,6 +110,7 @@ const getAllRolesPermissionsGroupByRole = async () => {
         "description",
         "created_at",
         "updated_at",
+        "status",
         "is_create",
         "is_read",
         "is_delete",
@@ -136,7 +136,7 @@ const getAllRolesPermissionsGroupByRole = async () => {
 const getRolePermissionsById = async (id) => {
   logger.info("IN - getRolePermissionsById Database query!");
   try {
-    const response = await db.Roles.findOne({
+    const response = await db.RolePermissions.findOne({
       where: { id },
     });
 
@@ -155,18 +155,76 @@ const getRolePermissionsById = async (id) => {
   }
 };
 
-const updateRolePermissions = async (id, value, label, description) => {
+const getRolePermissionByRoleAndPermissionId = async (
+  role_id,
+  permission_id
+) => {
+  logger.info("IN - getRolePermissionByRoleAndPermissionId Database query!");
+  try {
+    const response = await db.RolePermissions.findOne({
+      where: { role_id, permission_id },
+    });
+
+    logger.info("OUT - getRolePermissionByRoleAndPermissionId Database query!");
+    return response;
+  } catch (err) {
+    console.log(err);
+    logger.error(
+      "ERROR - getRolePermissionByRoleAndPermissionId Database query: ",
+      err.message
+    );
+    throw new Error(
+      "ERROR - getRolePermissionByRoleAndPermissionId Database query: ",
+      err.message
+    );
+  }
+};
+
+const getRolePermissionByRoleId = async (role_id) => {
+  logger.info("IN - getRolePermissionByRoleId Database query!");
+  try {
+    const response = await db.RolePermissions.findOne({
+      where: { role_id },
+    });
+
+    logger.info("OUT - getRolePermissionByRoleId Database query!");
+    return response;
+  } catch (err) {
+    console.log(err);
+    logger.error(
+      "ERROR - getRolePermissionByRoleId Database query: ",
+      err.message
+    );
+    throw new Error(
+      "ERROR - getRolePermissionByRoleId Database query: ",
+      err.message
+    );
+  }
+};
+
+const updateRolePermissions = async ({
+  // id,
+  role_id,
+  permission_id,
+  is_create,
+  is_read,
+  is_update,
+  is_delete,
+  description,
+}) => {
   logger.info("IN - updateRolePermissions Database query!");
   try {
-    const response = await db.Roles.update(
+    const response = await db.RolePermissions.update(
       {
-        value,
-        label,
+        is_create,
+        is_read,
+        is_update,
+        is_delete,
         description,
         updated_at: new Date(),
       },
       {
-        where: { id },
+        where: { role_id, permission_id },
       }
     );
 
@@ -182,11 +240,33 @@ const updateRolePermissions = async (id, value, label, description) => {
   }
 };
 
-const deleteRolePermissions = async (id) => {
+const deleteRolePermissions = async (role_id) => {
   logger.info("IN - deleteRolePermissions Database query!");
   try {
-    const response = await db.Roles.destroy({
-      where: { id },
+    const response = await db.RolePermissions.destroy({
+      where: { role_id },
+    });
+
+    logger.info("OUT - deleteRolePermissions Database query!");
+    return response;
+  } catch (err) {
+    console.log(err);
+    logger.error("ERROR - deleteRolePermissions Database query: ", err.message);
+    throw new Error(
+      "ERROR - deleteRolePermissions Database query: ",
+      err.message
+    );
+  }
+};
+
+const deleteRolePermissionByRoleAndPermissionId = async (
+  role_id,
+  permission_id
+) => {
+  logger.info("IN - deleteRolePermissions Database query!");
+  try {
+    const response = await db.RolePermissions.destroy({
+      where: { role_id, permission_id },
     });
 
     logger.info("OUT - deleteRolePermissions Database query!");
@@ -207,6 +287,9 @@ module.exports = {
   getAllPermissionsAgainstRole,
   getAllRolesPermissionsGroupByRole,
   getRolePermissionsById,
+  getRolePermissionByRoleAndPermissionId,
+  getRolePermissionByRoleId,
   updateRolePermissions,
   deleteRolePermissions,
+  deleteRolePermissionByRoleAndPermissionId,
 };

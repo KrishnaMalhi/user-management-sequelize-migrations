@@ -17,6 +17,11 @@ const ErrorMessage = {
   //PERMISSIONS
   PERMISSION_NOT_FOUND: "Permission not found!",
   PERMISSION_ALREADY_EXISTS: "Permission already exists!",
+
+  // ROLE PERMISSIONS
+  ROLE_PERMISSIONS_NOT_FOUND: "Role permissions not found!",
+  PERMISSIONS_AGAINST_ROLE_ALREADY_EXISTS:
+    "Permissions against role already exists!",
 };
 
 const SuccessMessages = {

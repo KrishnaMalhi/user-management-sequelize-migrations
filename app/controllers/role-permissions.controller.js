@@ -1,4 +1,5 @@
 const RolesDBQuery = require("../queries/roles.query");
+const PermissionsDBQuery = require("../queries/permissions.query");
 const RolesPermissionsDBQuery = require("../queries/role-permissions.query");
 const { ErrorCodes } = require("../utils/responseCodesUtils");
 const {
@@ -22,7 +23,21 @@ const createRolePermissions = async (req, res) => {
         ErrorCodes.ROLE_NOT_FOUND
       );
     }
-    const createdPermissions = await Promise.all(
+
+    const isRoleExist = await RolesPermissionsDBQuery.getRolePermissionByRoleId(
+      roleId
+    );
+    if (roleExists) {
+      return ResponseUtils.sendError(
+        res,
+        req,
+        {},
+        ErrorMessage.PERMISSIONS_AGAINST_ROLE_ALREADY_EXISTS,
+        ErrorCodes.PERMISSIONS_AGAINST_ROLE_ALREADY_EXISTS
+      );
+    }
+
+    const createdRolePermissions = await Promise.all(
       rolePermissions.map(async (permission) => {
         return RolesPermissionsDBQuery.createRolePermissions({
           role_id: roleId,
@@ -81,23 +96,83 @@ const getAllPermissionsAgainstRole = async (req, res) => {
         ErrorCodes.ROLE_NOT_FOUND
       );
     }
+
+    // Fetch permissions with associated role permissions data
     const permissions =
       await RolesPermissionsDBQuery.getAllPermissionsAgainstRole(role_id);
-    const response = permissions.map((permission) => ({
-      isCreate: permission.is_create,
-      isRead: permission.is_read,
-      isDelete: permission.is_delete,
-      isEdit: permission.is_update,
-      id: permission["permission.id"],
-      label: permission["permission.label"],
-      page_url: permission["permission.page_url"],
-      parent_id: permission["permission.parent_id"],
-      status: permission["permission.status"],
-      type: permission["permission.type"],
-    }));
+
+    // Organize permissions into a map for easy lookup
+    const permissionMap = [];
+    const groupedPermissions = [];
+    const setOfParentIds = new Set();
+
+    permissions.forEach((permission) => {
+      const formattedPermission = {
+        id: permission["permission.id"],
+        value: permission["permission.label"],
+        label: permission["permission.label"],
+        page_url: permission["permission.page_url"],
+        parent_id: permission["permission.parent_id"],
+        type: permission["permission.type"],
+        description: permission.description,
+        status: permission["permission.status"],
+        created_at: permission.created_at,
+        updated_at: permission.updated_at,
+        isCreate: permission.is_create,
+        isRead: permission.is_read,
+        isDelete: permission.is_delete,
+        isEdit: permission.is_update,
+        children: [], // Initialize empty children array
+      };
+      permissionMap.push(formattedPermission);
+      setOfParentIds.add(permission["permission.parent_id"]);
+    });
+
+    // Convert the Set into an array for mapping and use Promise.all
+    const parentPromises = Array.from(setOfParentIds).map(async (parentId) => {
+      const dbParentPermission = await PermissionsDBQuery.getPermissionById(
+        parentId
+      );
+      if (!dbParentPermission) return null;
+
+      const parentPermission = { ...dbParentPermission, children: [] };
+
+      const childPermissions = permissionMap.filter(
+        (permission) => permission.parent_id === parentPermission.id
+      );
+
+      parentPermission.children.push(...childPermissions);
+
+      return parentPermission;
+    });
+
+    // Wait for all the parent permissions to be processed
+    const resolvedPermissions = await Promise.all(parentPromises);
+
+    // Filter out any null values (if a parent permission was not found)
+    const validGroupedPermissions = resolvedPermissions.filter(Boolean);
+
+    // Add the top-level permissions (permissions with no parent_id)
+    const topLevelPermissions = permissionMap.filter(
+      (permission) => permission.parent_id === null
+    );
+    groupedPermissions.push(...topLevelPermissions);
+
+    // Add grouped parent permissions with their children
+    groupedPermissions.push(...validGroupedPermissions);
+
+    // After processing all permissions, check the final structure
+
     logger.info("OUT - getAllPermissionsAgainstRole controller!");
 
-    return ResponseUtils.sendResponse(res, req, response, "success", true, 200);
+    return ResponseUtils.sendResponse(
+      res,
+      req,
+      groupedPermissions,
+      "success",
+      true,
+      200
+    );
   } catch (err) {
     console.log(err);
     logger.error(
@@ -125,6 +200,7 @@ const getAllRolesPermissionsGroupByRole = async (req, res) => {
           description: item.description,
           created_at: item.created_at,
           updated_at: item.updated_at,
+          status: item.status === 1 ? true : false,
           role: {
             id: item["role.id"],
             value: item["role.value"],
@@ -203,9 +279,9 @@ const getRolePermissionsById = async (req, res) => {
 const updateRolePermissions = async (req, res) => {
   logger.info("IN - updateRolePermissions controller!");
   try {
-    const { id, value, label, description } = req.body;
-    const isExist = await RolesDBQuery.getRoleById(id);
-    if (!isExist) {
+    const { id, roleId, roleDescription, rolePermissions } = req.body;
+    const isRoleExist = await RolesDBQuery.getRoleById(roleId);
+    if (!isRoleExist) {
       return ResponseUtils.sendError(
         res,
         req,
@@ -214,11 +290,72 @@ const updateRolePermissions = async (req, res) => {
         ErrorCodes.ROLE_NOT_FOUND
       );
     }
-    const response = await RolesDBQuery.updateRolePermissions(
-      id,
-      value,
-      label,
-      description
+
+    const updatedRolePermissions = await Promise.all(
+      rolePermissions.map(async (permission) => {
+        const isPermissionExists = await PermissionsDBQuery.getPermissionById(
+          permission.permissionId
+        );
+        if (!isPermissionExists) {
+          return ResponseUtils.sendError(
+            res,
+            req,
+            {},
+            ErrorMessage.PERMISSION_NOT_FOUND,
+            ErrorCodes.PERMISSION_NOT_FOUND
+          );
+        }
+
+        const isRolePermissionExist =
+          await RolesPermissionsDBQuery.getRolePermissionByRoleAndPermissionId(
+            roleId,
+            permission.permissionId
+          );
+
+        // Check if all rights are set to 0 (i.e., Create, View, Edit, Delete are all 0)
+        const noPermissions =
+          !permission.rights.Create &&
+          !permission.rights.View &&
+          !permission.rights.Edit &&
+          !permission.rights.Delete;
+
+        if (noPermissions) {
+          // Delete the role permission if it exists and all rights are 0
+          if (isRolePermissionExist) {
+            await RolesPermissionsDBQuery.deleteRolePermissionByRoleAndPermissionId(
+              roleId,
+              permission.permissionId
+            );
+          }
+          // Skip the rest of the logic as the record is deleted
+          return null;
+        }
+
+        if (isRolePermissionExist) {
+          // Update the existing permission
+          return RolesPermissionsDBQuery.updateRolePermissions({
+            // id: id,
+            role_id: roleId,
+            permission_id: permission.permissionId,
+            is_create: permission.rights.Create ? 1 : 0,
+            is_read: permission.rights.View ? 1 : 0,
+            is_update: permission.rights.Edit ? 1 : 0,
+            is_delete: permission.rights.Delete ? 1 : 0,
+            description: roleDescription,
+          });
+        } else {
+          // Insert a new permission if not present
+          return RolesPermissionsDBQuery.createRolePermissions({
+            role_id: roleId,
+            permission_id: permission.permissionId,
+            is_create: permission.rights.Create ? 1 : 0,
+            is_read: permission.rights.View ? 1 : 0,
+            is_update: permission.rights.Edit ? 1 : 0,
+            is_delete: permission.rights.Delete ? 1 : 0,
+            description: roleDescription,
+          });
+        }
+      })
     );
     logger.info("OUT - updateRolePermissions controller!");
 
@@ -240,9 +377,11 @@ const updateRolePermissions = async (req, res) => {
 const deleteRolePermissions = async (req, res) => {
   logger.info("IN - deleteRolePermissions controller!");
   try {
-    const { id } = req.body;
-    const response = await RolesDBQuery.deleteRolePermissions(id);
-    if (!response) {
+    const { role_id } = req.body;
+    const response = await RolesPermissionsDBQuery.deleteRolePermissions(
+      role_id
+    );
+    if (response === 0) {
       return ResponseUtils.sendError(
         res,
         req,
